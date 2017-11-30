@@ -24,11 +24,12 @@ public class PathTest {
 		CombinedPath jerkDecelTrap = new CombinedPath.Trapezoid(5, 0, 0, -2, -2);
 //		LinearPath jerkDecelL = new LinearPath(5, 0, -2);
 		IntegralPath jerkDecel = new IntegralPath(jerkDecelTrap);
-		LinearPath cruise = new LinearPath(20, 5);
+//		MotionPath cruise = new IntegralPath(new LinearPath(10, 5));
 		
 //		CombinedPath p = new CombinedPath(0, jerkAccel, new LinearPath(10,5,5,0), new IntegralPath(5, new LinearPath(0,-2,-2)), new IntegralPath(new LinearPath(-4,-2,-2,0)), new IntegralPath(new LinearPath(-2,0,2)));
+		CombinedPath pp = new CombinedPath(0, jerkAccel, new LinearDerivativePath(10,5), jerkDecel);
 		
-		CombinedPath p = new CombinedPath(0, jerkAccel, new LinearPath(10,5,5,0), jerkDecel);
+		CombinedPath p = new CombinedPath(0, pp);
 		
 //		TrapezoidalMotionPath p = new TrapezoidalMotionPath(jerkAccel, cruise, jerkDecel);
 		

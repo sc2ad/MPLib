@@ -1,14 +1,14 @@
-public class LinearPath implements MotionPath {
+public class LinearDerivativePath implements MotionPath {
 	private double velStart,velEnd,accel,distance,totalTime;
 
-	public LinearPath(double distance, double v0, double v, double a) {
+	public LinearDerivativePath(double distance, double v0, double v, double a) {
 		velStart = v0;
 		velEnd = v;
 		accel = a;
 		this.distance = distance;
 		totalTime = getTotalTime();
 	}
-	public LinearPath(double v0, double v, double a) {
+	public LinearDerivativePath(double v0, double v, double a) {
 		velStart = v0;
 		velEnd = v;
 		accel = a;
@@ -17,7 +17,7 @@ public class LinearPath implements MotionPath {
 		}
 		totalTime = getTotalTime();
 	}
-	public LinearPath(double distance, double v) {
+	public LinearDerivativePath(double distance, double v) {
 		velStart = v;
 		velEnd = v;
 		accel = 0;

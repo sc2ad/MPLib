@@ -8,20 +8,20 @@ public class CombinedPath implements MotionPath {
 		public Trapezoid(double distance, double maxV, double a) {
 			super(0.0);
 			MotionPath[] p = new MotionPath[3];
-			p[0] = new LinearPath(0, maxV, a);
-			p[2] = new LinearPath(maxV, 0, -a);
+			p[0] = new LinearDerivativePath(0, maxV, a);
+			p[2] = new LinearDerivativePath(maxV, 0, -a);
 			// The cruise one is the one we know the LEAST about, need to use positions of others
-			p[1] = new LinearPath(distance - 2 * p[0].getTotalDistance(), maxV);
+			p[1] = new LinearDerivativePath(distance - 2 * p[0].getTotalDistance(), maxV);
 			setPath(p);
 		}
 		public Trapezoid(double start, double end, double startV, double maxV, double a) {
 			super(start);
 			double dist = end-start;
 			MotionPath[] p = new MotionPath[3];
-			p[0] = new LinearPath(startV, maxV, a);
-			p[2] = new LinearPath(maxV, 0, -a);
+			p[0] = new LinearDerivativePath(startV, maxV, a);
+			p[2] = new LinearDerivativePath(maxV, 0, -a);
 			// The cruise one is the one we know the LEAST about, need to use positions of others
-			p[1] = new LinearPath(dist - 2 * p[0].getTotalDistance(), maxV);
+			p[1] = new LinearDerivativePath(dist - 2 * p[0].getTotalDistance(), maxV);
 			setPath(p);
 		}
 		
