@@ -24,6 +24,7 @@ public class LinearDerivativePath implements MotionPath {
 		this.distance = distance;
 		totalTime = getTotalTime();
 	}
+	@Override
 	public double getTotalTime() {
 		if (totalTime != 0) {
 			return totalTime;
@@ -38,6 +39,7 @@ public class LinearDerivativePath implements MotionPath {
 		totalTime = (velEnd - velStart) / accel;
 		return totalTime;
 	}
+	@Override
 	public double getTotalDistance() {
 		if (distance != 0) {
 			return distance;
@@ -45,15 +47,19 @@ public class LinearDerivativePath implements MotionPath {
 		distance = getPositionOnPath(getTotalTime());
 		return distance;
 	}
+	@Override
 	public double getSpeed(double time) {
 		return velStart + accel * time;
 	}
+	@Override
 	public double getAccel(double time) {
 		return accel;
 	}
+	@Override
 	public double getPositionOnPath(double time) {
 		return velStart * time + 0.5 * getAccel(time) * time * time; // not needed because doing already
 	}
+	@Override
 	public boolean validate() {
 		//TODO if x==predicted x, v==pred v, a==preda
 		return true;

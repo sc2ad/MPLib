@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,17 +18,23 @@ public class PathTest {
 //		IntegralPath p = new IntegralPath(slope);
 		
 //		TrapezoidalMotionPath p = new TrapezoidalMotionPath(100, 5, 2);
-		CombinedPath jerkAccelTrap = new CombinedPath.Trapezoid(5, 2, 2); // params: vel, accel, jerk
+		CombinedPath jerkAccelTrap = new CombinedPath.LongitudalTrapezoid(0, 5, 2, 2); // params: vel, accel, jerk
 		IntegralPath jerkAccel = new IntegralPath(jerkAccelTrap);
-		CombinedPath jerkDecelTrap = new CombinedPath.Trapezoid(5, 0, 0, -2, -2);
-//		LinearPath jerkDecelL = new LinearPath(5, 0, -2);
+		CombinedPath jerkDecelTrap = new CombinedPath.LongitudalTrapezoid(5, -5, -2, -2);
 		IntegralPath jerkDecel = new IntegralPath(jerkDecelTrap);
+		
+		CombinedPath jerkAccelTrapDown = new CombinedPath.LongitudalTrapezoid(0, -5, -2, -2);
+		IntegralPath jerkAccelDown = new IntegralPath(jerkAccelTrapDown);
+		CombinedPath jerkDecelTrapDown = new CombinedPath.LongitudalTrapezoid(-5, 5, 2, 2);
+		IntegralPath jerkDecelDown = new IntegralPath(jerkDecelTrapDown);
+		
 //		MotionPath cruise = new IntegralPath(new LinearPath(10, 5));
 		
 //		CombinedPath p = new CombinedPath(0, jerkAccel, new LinearPath(10,5,5,0), new IntegralPath(5, new LinearPath(0,-2,-2)), new IntegralPath(new LinearPath(-4,-2,-2,0)), new IntegralPath(new LinearPath(-2,0,2)));
 		CombinedPath pp = new CombinedPath(0, jerkAccel, new LinearDerivativePath(10,5), jerkDecel);
+		CombinedPath pdown = new CombinedPath(0, jerkAccelDown, new LinearDerivativePath(-10,-5), jerkDecelDown);
 		
-		CombinedPath p = new CombinedPath(0, pp);
+		CombinedPath p = new CombinedPath(0, pp, new Hold(5), pdown);
 		
 //		TrapezoidalMotionPath p = new TrapezoidalMotionPath(jerkAccel, cruise, jerkDecel);
 		
