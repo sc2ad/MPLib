@@ -1,5 +1,9 @@
 public class LinearDerivativePath implements MotionPath {
 	private double velStart,velEnd,accel,distance,totalTime;
+	
+	/*
+	 * TODO SIMPLIFY THIS FILE TO USE INTEGRALPATH WITH HOLD
+	 */
 
 	public LinearDerivativePath(double distance, double v0, double v, double a) {
 		velStart = v0;
