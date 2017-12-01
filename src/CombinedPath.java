@@ -1,10 +1,33 @@
 
+/**
+ * Provides handling for multiple MotionPaths combined together.
+ * DOES NOT INTEGRATE ANY OF THE PROVIDED PATHS
+ * It uses the positions from each path to construct the overall curve
+ * Constructs each curve offset from the previous (maybe?)
+ * 
+ * @author Sc2ad
+ * 
+ */
 public class CombinedPath implements MotionPath {
 	/*
 	 * ENUM CLASSES
 	 */
+	/**
+	 * Creates a {@link MotionPath} based off of a trapezoid's first derivative.
+	 * 
+	 * @author Sc2ad
+	 *
+	 */
 	public static class LongitudalTrapezoid extends CombinedPath {
 
+		/**
+		 * Constructs the {@link MotionPath} using kinematics equations.
+		 * 
+		 * @param start 	the start position for the curve (integral + C offset)
+		 * @param distance	the distance to travel with the overall curve (- for downwards)
+		 * @param maxV		the velocity to construct the trapezoidal lines with
+		 * @param a			the acceleration to construct the trapezoidal lines with
+		 */
 		public LongitudalTrapezoid(double start, double distance, double maxV, double a) {
 			super(start);
 			MotionPath[] p = new MotionPath[3];
@@ -24,16 +47,36 @@ public class CombinedPath implements MotionPath {
 		}		
 	}	
 	
+	@SuppressWarnings("javadoc")
 	private MotionPath[] paths;
+	@SuppressWarnings("javadoc")
 	private double travelledPathDistance, start, distance, totTime;
 	
+	/**
+	 * Construct a CombinedPath with simply a start.
+	 * Must be used in conjunction with {@link #setPath(MotionPath[] p) setPath}, otherwise NullPointerExceptions will occur.
+	 * 
+	 * @param start the offset this path has (typically 0)
+	 */
 	public CombinedPath(double start) {
 		this.start = start;
 	}
+	/**
+	 * Standard construction.
+	 * 
+	 * @param start the offset this path has (typically 0)
+	 * @param p the paths that make up this CombinedPath
+	 */
 	public CombinedPath(double start, MotionPath... p) {
 		paths = p;
 		this.start = start;
 	}
+	/**
+	 * Returns the current {@link MotionPath} at the given time.
+	 * 
+	 * @param time time since this class started
+	 * @return the {@link MotionPath} at the current time
+	 */
 	private MotionPath getCurve(double time) {
 		travelledPathDistance = 0;
 		if (time <= paths[0].getTotalTime()) {
@@ -54,6 +97,12 @@ public class CombinedPath implements MotionPath {
 		return paths[paths.length-1]; // should never happen
 	}
 	
+	/**
+	 * Returns the time since the current {@link MotionPath} has begun.
+	 * 
+	 * @param time time since this class started
+	 * @return returns time since the last {@link MotionPath} has begun running
+	 */
 	private double getDeltaTime(double time) {
 		double maxSum = 0;
 		if (time <= paths[0].getTotalTime()) {
@@ -72,6 +121,12 @@ public class CombinedPath implements MotionPath {
 		return time - maxSum; // should never happen
 	}
 	
+	/**
+	 * Used to set the {@link MotionPath} array of this object.
+	 * @see #paths
+	 * 
+	 * @param p the path array to set {@link #paths} to
+	 */
 	public void setPath(MotionPath[] p) {
 		paths = p;
 	}

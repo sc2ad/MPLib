@@ -11,7 +11,14 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
+/**
+ * Overarching class to run various paths.
+ * 
+ * @author Sc2ad
+ *
+ */
 public class PathTest {
+	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
 		// ALL OF THESE LINES CAN HAVE A SIMPLIFIED TYPE OF MotionPath
 		CombinedPath jerkAccelTrap = new CombinedPath.LongitudalTrapezoid(0, 5, 2, 2); // params: vel, accel, jerk
@@ -46,6 +53,12 @@ public class PathTest {
 		
 		run(triangleIntegral);
 	}
+	/**
+	 * Displays various information about the path provided.
+	 * It also displays a graph.
+	 * 
+	 * @param p
+	 */
 	public static void run(MotionPath p) {
 		double t = 0;
 		ArrayList<Double> times = new ArrayList<Double>();
@@ -65,6 +78,14 @@ public class PathTest {
 		viewGraph(times,pos,spd,accel);
 		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel);
 	}
+	/**
+	 * Graphs information on the following data lists.
+	 * 
+	 * @param times the time {@link List} to visualize
+	 * @param pos the positions {@link List} to visualize
+	 * @param spd the speeds {@link List} to visualize
+	 * @param accel the accelerations {@link List} to visualize
+	 */
 	public static void viewGraph(List<Double> times, List<Double> pos, List<Double> spd, List<Double> accel) {
 		double[] timeSteps = Util.getDoubleArr(times);
 		double[] posSteps = Util.getDoubleArr(pos);
@@ -81,9 +102,21 @@ public class PathTest {
 		frame.setVisible(true);
 	}
 }
+/**
+ * Provides Useful functions.
+ * <p>SHOULD MOVE TO ITS OWN FILE
+ * 
+ * @author Sc2ad
+ *
+ */
 class Util {
-	/*
+	/**
+	 * Determines if a < b with an error for b.
 	 * 
+	 * @param a the a value in a < b
+	 * @param b the b value in a < b
+	 * @param error the error to be added or subtracted from b
+	 * @return if a < b with error
 	 */
 	public static boolean lessThan(double a, double b, double error) {
 		return a < b - error || a < b + error;
@@ -98,8 +131,14 @@ class Util {
 		}
 		return out;
 	}
-	/*
+	/**
+	 * Writes the following {@link List}s to a CSV file.
 	 * 
+	 * @param location the file path to the csv file (without datetime)
+	 * @param times the times {@link List} to write
+	 * @param speeds the speeds {@link List} to write
+	 * @param positions the positions {@link List} to write
+	 * @param accelerations the accelerations {@link List} to write
 	 */
 	public static void writeCSV(String location, List<Double> times, List<Double> speeds, List<Double> positions, List<Double> accelerations) {
         BufferedWriter os;
