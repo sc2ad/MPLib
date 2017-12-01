@@ -1,10 +1,26 @@
+/**
+ * A Linear velocity curve {@link MotionPath}. This is one of the simplest {@link MotionPath}s.
+ * It uses kinematic equations to determine position, speed, and acceleration based off of input.
+ * 
+ * @author Sc2ad
+ *
+ */
 public class LinearDerivativePath implements MotionPath {
+	@SuppressWarnings("javadoc")
 	private double velStart,velEnd,accel,distance,totalTime;
 	
 	/*
 	 * TODO SIMPLIFY THIS FILE TO USE INTEGRALPATH WITH HOLD
 	 */
 
+	/**
+	 * Large constructor, useful if everything (except time) is known.
+	 * 
+	 * @param distance the distance to travel
+	 * @param v0 the initial velocity
+	 * @param v the final velocity
+	 * @param a the acceleration to use
+	 */
 	public LinearDerivativePath(double distance, double v0, double v, double a) {
 		velStart = v0;
 		velEnd = v;
@@ -12,6 +28,14 @@ public class LinearDerivativePath implements MotionPath {
 		this.distance = distance;
 		totalTime = getTotalTime();
 	}
+	/**
+	 * Useful constructor. Constructs the line from an initial and final velocity as well as acceleration.
+	 * 
+	 * @param v0 the initial velocity
+	 * @param v the final velocity
+	 * @param a the acceleration to accelerate with
+	 * @throws IllegalArgumentException an acceleration of 0 was given
+	 */
 	public LinearDerivativePath(double v0, double v, double a) {
 		velStart = v0;
 		velEnd = v;
@@ -21,6 +45,12 @@ public class LinearDerivativePath implements MotionPath {
 		}
 		totalTime = getTotalTime();
 	}
+	/**
+	 * Useful constructor. Constructs the line without acceleration. Simply uses distance and velocity.
+	 * 
+	 * @param distance the distance to travel
+	 * @param v the velocity to travel at
+	 */
 	public LinearDerivativePath(double distance, double v) {
 		velStart = v;
 		velEnd = v;
