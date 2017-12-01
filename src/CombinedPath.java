@@ -68,6 +68,14 @@ public class CombinedPath implements MotionPath {
 		paths = p;
 	}
 	
+	public MotionPath copy() {
+		MotionPath[] paf = new MotionPath[paths.length];
+		for (int i = 0; i < paf.length; i++) {
+			paf[i] = paths[i].copy();
+		}
+		return new CombinedPath(start, paf);
+	}
+	
 	public double getSpeed(double time) {
 		double dt = getDeltaTime(time);
 		return getCurve(time).getSpeed(dt);
@@ -78,12 +86,12 @@ public class CombinedPath implements MotionPath {
 		return getCurve(time).getAccel(dt);
 	}
 
-	public double getPositionOnPath(double time) {
+	public double getPosition(double time) {
 		double dt = getDeltaTime(time);
 		if (time >= getTotalTime()) {
 			return start+getTotalDistance();
 		}
-		return start+getCurve(time).getPositionOnPath(dt) + travelledPathDistance;
+		return start+getCurve(time).getPosition(dt) + travelledPathDistance;
 	}
 
 	public double getTotalTime() {

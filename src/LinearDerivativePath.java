@@ -29,6 +29,10 @@ public class LinearDerivativePath implements MotionPath {
 		totalTime = getTotalTime();
 	}
 	@Override
+	public MotionPath copy() {
+		return new LinearDerivativePath(distance, velStart, velEnd, accel);
+	}
+	@Override
 	public double getTotalTime() {
 		if (totalTime != 0) {
 			return totalTime;
@@ -48,7 +52,7 @@ public class LinearDerivativePath implements MotionPath {
 		if (distance != 0) {
 			return distance;
 		}
-		distance = getPositionOnPath(getTotalTime());
+		distance = getPosition(getTotalTime());
 		return distance;
 	}
 	@Override
@@ -60,7 +64,7 @@ public class LinearDerivativePath implements MotionPath {
 		return accel;
 	}
 	@Override
-	public double getPositionOnPath(double time) {
+	public double getPosition(double time) {
 		return velStart * time + 0.5 * getAccel(time) * time * time; // not needed because doing already
 	}
 	@Override

@@ -13,11 +13,7 @@ import org.math.plot.Plot2DPanel;
 
 public class PathTest {
 	public static void main(String[] args) {
-//		LinearPath jerk = new LinearPath(0,1,1);
-//		IntegralPath slope = new IntegralPath(jerk);
-//		IntegralPath p = new IntegralPath(slope);
-		
-//		TrapezoidalMotionPath p = new TrapezoidalMotionPath(100, 5, 2);
+		// ALL OF THESE LINES CAN HAVE A SIMPLIFIED TYPE OF MotionPath
 		CombinedPath jerkAccelTrap = new CombinedPath.LongitudalTrapezoid(0, 5, 2, 2); // params: vel, accel, jerk
 		IntegralPath jerkAccel = new IntegralPath(jerkAccelTrap);
 		CombinedPath jerkDecelTrap = new CombinedPath.LongitudalTrapezoid(5, -5, -2, -2);
@@ -28,17 +24,18 @@ public class PathTest {
 		CombinedPath jerkDecelTrapDown = new CombinedPath.LongitudalTrapezoid(-5, 5, 2, 2);
 		IntegralPath jerkDecelDown = new IntegralPath(jerkDecelTrapDown);
 		
-//		MotionPath cruise = new IntegralPath(new LinearPath(10, 5));
-		
-//		CombinedPath p = new CombinedPath(0, jerkAccel, new LinearPath(10,5,5,0), new IntegralPath(5, new LinearPath(0,-2,-2)), new IntegralPath(new LinearPath(-4,-2,-2,0)), new IntegralPath(new LinearPath(-2,0,2)));
 		CombinedPath pp = new CombinedPath(0, jerkAccel, new LinearDerivativePath(10,5), jerkDecel);
 		CombinedPath pdown = new CombinedPath(0, jerkAccelDown, new LinearDerivativePath(-10,-5), jerkDecelDown);
 		
-		CombinedPath p = new CombinedPath(0, pp, new Hold(5), pdown);
+		CombinedPath pap = new CombinedPath(0, pp, new Hold(5), pdown);
+		CombinedPath pap2 = (CombinedPath) pap.copy();
+		CombinedPath papDown = new CombinedPath(0, pdown.copy(), new Hold(5), pp.copy());
+		CombinedPath pap2Down = (CombinedPath) papDown.copy();
 		
-//		TrapezoidalMotionPath p = new TrapezoidalMotionPath(jerkAccel, cruise, jerkDecel);
 		
-		System.out.println(p.validate());
+		
+		CombinedPath p = new CombinedPath(0, pap, new Hold(5), pap2, new Hold(5), papDown, new Hold(5), pap2Down);
+		
 		double t = 0;
 		ArrayList<Double> times = new ArrayList<Double>();
 		ArrayList<Double> pos = new ArrayList<Double>();
@@ -46,14 +43,14 @@ public class PathTest {
 		ArrayList<Double> accel = new ArrayList<Double>();
 		
 		while (Util.lessThan(t, p.getTotalTime(), 0.00002)) {
-			System.out.println("Time: "+t+", Position: "+p.getPositionOnPath(t)+", Speed: "+p.getSpeed(t)+", Acceleration: "+p.getAccel(t));
+			System.out.println("Time: "+t+", Position: "+p.getPosition(t)+", Speed: "+p.getSpeed(t)+", Acceleration: "+p.getAccel(t));
 			times.add(t);
-			pos.add(p.getPositionOnPath(t));
+			pos.add(p.getPosition(t));
 			spd.add(p.getSpeed(t));
 			accel.add(p.getAccel(t));
 			t += 0.05;
 		}
-		System.out.println(p.getTotalDistance());
+//		System.out.println(p.getTotalDistance());
 		viewGraph(times,pos,spd,accel);
 		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel);
 	}

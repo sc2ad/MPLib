@@ -14,17 +14,21 @@ public class IntegralPath implements MotionPath {
 		position = start;
 		lastTime = 0;
 	}
-
+	
+	@Override
+	public MotionPath copy() {
+		return new IntegralPath(position, speedPath.copy());
+	}
 	@Override
 	public double getSpeed(double time) {
-		return speedPath.getPositionOnPath(time);
+		return speedPath.getPosition(time);
 	}
 	@Override
 	public double getAccel(double time) {
 		return speedPath.getSpeed(time);
 	}
 	@Override
-	public double getPositionOnPath(double time) {
+	public double getPosition(double time) {
 		// x + v0t + 1/2at^2
 		position += getSpeed(time) * (time - lastTime);
 		lastTime = time;
@@ -38,7 +42,7 @@ public class IntegralPath implements MotionPath {
 	}
 	@Override
 	public double getTotalDistance() {
-		return getPositionOnPath(getTotalTime());
+		return getPosition(getTotalTime());
 	} // Basically the same for all paths
 
 	@Override

@@ -11,6 +11,9 @@ public class Hold implements MotionPath {
 		this.time = time;
 		this.value = value;
 	}
+	public MotionPath copy() {
+		return new Hold(time, value);
+	}
 	
 	public double getSpeed(double time) {
 		return 0;
@@ -20,7 +23,7 @@ public class Hold implements MotionPath {
 		return 0;
 	}
 
-	public double getPositionOnPath(double time) {
+	public double getPosition(double time) {
 		return value; // 0 for a hold
 	}
 
