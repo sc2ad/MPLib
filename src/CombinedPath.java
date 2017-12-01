@@ -12,6 +12,14 @@ public class CombinedPath implements MotionPath {
 			p[2] = new LinearDerivativePath(maxV, 0, -a);
 			// The cruise one is the one we know the LEAST about, need to use positions of others
 			p[1] = new LinearDerivativePath(distance - 2 * p[0].getTotalDistance(), maxV);
+			if (p[0].getTotalDistance() > distance / 2) {
+				// Need to setup a triangle instead
+				// 1/2at^2 = distance/2
+				double newTime = Math.sqrt(distance / a);
+				p[0] = new LinearDerivativePath(0, newTime * a, a); // don't question jankness
+				p[1] = new Hold(0); // Legit, nothing
+				p[2] = new LinearDerivativePath(newTime * a, 0, -a);
+			}
 			setPath(p);
 		}		
 	}	
@@ -78,6 +86,9 @@ public class CombinedPath implements MotionPath {
 	
 	public double getSpeed(double time) {
 		double dt = getDeltaTime(time);
+		if (time > getTotalTime()) {
+			return getCurve(time).getSpeed(dt + dt < getCurve(time).getTotalTime() ? getCurve(time).getTotalTime() : 0);
+		}
 		return getCurve(time).getSpeed(dt);
 	}
 	

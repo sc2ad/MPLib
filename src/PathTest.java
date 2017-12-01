@@ -36,6 +36,11 @@ public class PathTest {
 		
 		CombinedPath p = new CombinedPath(0, pap, new Hold(5), pap2, new Hold(5), papDown, new Hold(5), pap2Down);
 		
+		MotionPath trap = new CombinedPath.LongitudalTrapezoid(0, 100, 10, 1);
+		
+		run(trap);
+	}
+	public static void run(MotionPath p) {
 		double t = 0;
 		ArrayList<Double> times = new ArrayList<Double>();
 		ArrayList<Double> pos = new ArrayList<Double>();
