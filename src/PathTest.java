@@ -37,8 +37,14 @@ public class PathTest {
 		CombinedPath p = new CombinedPath(0, pap, new Hold(5), pap2, new Hold(5), papDown, new Hold(5), pap2Down);
 		
 		MotionPath trap = new CombinedPath.LongitudalTrapezoid(0, 100, 10, 1);
+		MotionPath intTrap = new IntegralPath(0, trap);
+		MotionPath coast = new LinearDerivativePath(10,100);
+		MotionPath trapDown = new CombinedPath.LongitudalTrapezoid(100, 0, -10, -1);
+		MotionPath intDown = new IntegralPath(0, trapDown);
 		
-		run(trap);
+		CombinedPath triangleIntegral = new CombinedPath(0, intTrap, coast, intDown);
+		
+		run(triangleIntegral);
 	}
 	public static void run(MotionPath p) {
 		double t = 0;
