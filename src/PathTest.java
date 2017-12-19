@@ -51,7 +51,16 @@ public class PathTest {
 		
 		CombinedPath triangleIntegral = new CombinedPath(0, intTrap, coast, intDown);
 		
-		run(triangleIntegral);
+		// gyro test stuff?
+		CombinedPath movement = new CombinedPath.LongitudalTrapezoid(0, 250, 10, 50);
+		CombinedPath gyro = new CombinedPath.LongitudalTrapezoid(0, 30, 10, 50); // In this case, all units are in deg
+		OverlappingPath pasdfasdf = new OverlappingPath(movement, gyro);
+//		CombinedPath moveBack = new CombinedPath.LongitudalTrapezoid(100, -100, -10, -20);
+//		CombinedPath gyroBack = new CombinedPath.LongitudalTrapezoid(30, -30, -10, -50);
+//		OverlappingPath pfdsafdsa = new OverlappingPath(moveBack, gyroBack);
+//		
+//		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
+		run(pasdfasdf);
 	}
 	/**
 	 * Displays various information about the path provided.
@@ -78,6 +87,74 @@ public class PathTest {
 		viewGraph(times,pos,spd,accel);
 		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel);
 	}
+	// This entire method is kinda a big BAD BAD BAD BAD *BAD* repeat
+	public static void run(GyroMotionPath p) {
+		double t = 0;
+		double sx=0, sy=0, lx=0, ly=0, ex=0, ey=0, tstart=0, tend=0;
+		
+		ArrayList<Double> times = new ArrayList<Double>();
+		ArrayList<Double> pos = new ArrayList<Double>();
+		ArrayList<Double> spd = new ArrayList<Double>();
+		ArrayList<Double> accel = new ArrayList<Double>();
+		ArrayList<Double> theta = new ArrayList<Double>();
+		ArrayList<Double> omega = new ArrayList<Double>();
+		ArrayList<Double> alpha = new ArrayList<Double>();
+		
+		ArrayList<Double> x = new ArrayList<Double>();
+		ArrayList<Double> y = new ArrayList<Double>();
+		
+		while (Util.lessThan(t, p.getTotalTime(), 0.00002)) {
+			System.out.println("Time: "+t+", Position: "+p.getPosition(t)+", Speed: "+p.getSpeed(t)+", Acceleration: "+p.getAccel(t)+", Angle: "+p.getAngle(t)+", Omega: "+p.getOmega(t)+", Alpha: "+p.getAlpha(t)+", (X,Y): ("+p.getX(t)+","+p.getY(t)+")");
+			times.add(t);
+			pos.add(p.getPosition(t));
+			spd.add(p.getSpeed(t));
+			accel.add(p.getAccel(t));
+			theta.add(p.getAngle(t));
+			omega.add(p.getOmega(t));
+			alpha.add(p.getAlpha(t));
+			if (p.getAlpha(t) == 0) {
+				// start!
+				if (sx == 0 && sy == 0) {
+					sx = p.getX(t);
+					sy = p.getY(t);
+					tstart = t;
+				}
+				lx = p.getX(t);
+				ly = p.getY(t);
+			} else {
+				ex = lx;
+				ey = ly;
+				if (tend == 0 && tstart != 0) {
+					tend = t;
+				}
+			}
+			x.add(p.getX(t));
+			y.add(p.getY(t));
+			t += 0.05;
+		}
+//		System.out.println(p.getTotalDistance());
+		System.out.println(sx);
+		System.out.println(sy);
+		System.out.println(ex);
+		System.out.println(ey);
+		System.out.println("\ndeltax: "+(ex-sx));
+		System.out.println("deltay: "+(ey-sy));
+		System.out.println("dt: "+(tend-tstart));
+		if (!Util.equals(p.getSpeed(tstart), p.getSpeed(tend), 0.00002) || !Util.equals(p.getOmega(tstart), p.getOmega(tend), 0.00002)) {
+			// validation check
+			System.out.println(p.getSpeed(tstart)+" != "+p.getSpeed(tend));
+			System.out.println(p.getOmega(tstart)+" != "+p.getOmega(tend));
+			throw new IllegalArgumentException("Accelerated during turn! Change params");
+		}
+		
+		System.out.println("dx: "+p.getX(tstart, tend, 20000));
+		System.out.println("dy: "+dy);
+		
+		viewGraph(times,pos,spd,accel);
+		viewGraph(times,theta,omega,alpha); // visualize theta curve at the same time
+		viewGraph(x,y);
+		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel, theta, omega, alpha, x, y);
+	}
 	/**
 	 * Graphs information on the following data lists.
 	 * 
@@ -97,6 +174,17 @@ public class PathTest {
 		plot.addLinePlot("speed", timeSteps, speedSteps);
 		plot.addLinePlot("accel", timeSteps, accelSteps);
 		JFrame frame = new JFrame("the panel");
+		frame.setContentPane(plot);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+	}
+	public static void viewGraph(List<Double> x, List<Double> y) {
+		double[] xReal = Util.getDoubleArr(x);
+		double[] yReal = Util.getDoubleArr(y);
+		
+		Plot2DPanel plot = new Plot2DPanel();
+		plot.addLinePlot("real space", xReal, yReal);
+		JFrame frame = new JFrame("x-y panel");
 		frame.setContentPane(plot);
 		frame.setSize(800, 600);
 		frame.setVisible(true);
@@ -121,9 +209,11 @@ class Util {
 	public static boolean lessThan(double a, double b, double error) {
 		return a < b - error || a < b + error;
 	}
-	/*
-	 * 
-	 */
+	
+	public static boolean equals(double a, double b, double error) {
+		return (a + error > b - error && a - error < b + error);
+	}
+
 	public static double[] getDoubleArr(List<Double> list) {
 		double[] out = new double[list.size()];
 		for (int i = 0; i < out.length; i++) {
@@ -158,4 +248,27 @@ class Util {
             e.printStackTrace();
         }
     }
+	// This entire method is kinda a big BAD BAD BAD BAD *BAD* repeat
+	public static void writeCSV(String location, List<Double> times, List<Double> speeds, List<Double> positions, List<Double> accelerations, List<Double> thetas, List<Double> omegas, List<Double> alphas, List<Double> x, List<Double> y) {
+		BufferedWriter os;
+        Date date = new Date(System.currentTimeMillis());
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(date);
+        try {
+            File dir = new File(location+"_" + timestamp + ".csv");
+            dir.createNewFile();
+            os = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir)));
+            os.write("times,speeds,positions,accelerations,thetas,omegas,alphas,x,y\n");
+//            os.write(String.format("%s,%s,%s,%s\n", times.get(0), targets.get(0), positions.get(0)));
+            for (int i=0; i < times.size(); i++) {
+                os.write(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s\n", times.get(i), speeds.get(i), positions.get(i), accelerations.get(i), thetas.get(i), omegas.get(i), alphas.get(i), x.get(i), y.get(i)));
+            }
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
+	public static double d2r(double angle) {
+		return Math.PI * angle / 180.0;
+	}
 }
