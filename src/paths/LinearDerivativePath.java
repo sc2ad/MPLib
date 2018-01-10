@@ -1,3 +1,4 @@
+package paths;
 /**
  * A Linear velocity curve {@link MotionPath}. This is one of the simplest {@link MotionPath}s.
  * It uses kinematic equations to determine position, speed, and acceleration based off of input.

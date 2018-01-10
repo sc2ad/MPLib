@@ -1,4 +1,4 @@
-
+package paths;
 /**
  * Provides handling for multiple MotionPaths combined together.
  * DOES NOT INTEGRATE ANY OF THE PROVIDED PATHS
