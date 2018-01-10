@@ -1,3 +1,4 @@
+package paths;
 /**
  * The overall MotionPath interface. This could also be rewritten to an abstract class.
  * This makes creating new paths trivial. One can also visualize any MotionPath.
