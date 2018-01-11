@@ -10,6 +10,7 @@ import paths.Hold;
 import paths.IntegralPath;
 import paths.LinearDerivativePath;
 import paths.MotionPath;
+import paths.Spline;
 import paths.Util;
 
 /**
@@ -62,6 +63,29 @@ public class PathTest {
 //		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
 		run(pasdfasdf);
 //		run(movement);
+		Spline.Point[] points = new Spline.Point[]{
+				new Spline.Point(-1, 0.86199480, 0.155362),
+				new Spline.Point(-0.5, 0.95802009, 0), // Middle deriv is useless
+				// TODO IDEA: INCORPORATE HAVING AN INTEGRAL FOR A PATH THAT DOES X VS DERIVATIVE (SPLINE FITS THAT INSTEAD)
+				new Spline.Point(0, 1.0986123, 0),
+				new Spline.Point(0.5, 1.2943767, 0.451863)};
+		try {
+			Spline s = Spline.interpolate(points);
+			double nx = -1.1;
+			List<Double> x = new ArrayList<Double>();
+			List<Double> y = new ArrayList<Double>();
+			while (nx <= 1.04) {
+				x.add(nx);
+				y.add(s.getY(nx));
+				System.out.println("x: "+nx+"\tyHat: "+s.getY(nx));
+				nx += 0.05;
+			}
+			System.out.println();
+			System.out.println(s);
+			viewGraph(x,y,points);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Displays various information about the path provided.
@@ -185,6 +209,25 @@ public class PathTest {
 		
 		Plot2DPanel plot = new Plot2DPanel();
 		plot.addLinePlot("real space", xReal, yReal);
+		JFrame frame = new JFrame("x-y panel");
+		frame.setContentPane(plot);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+	}
+	public static void viewGraph(List<Double> x, List<Double> y, Spline.Point[] points) {
+		double[] xReal = Util.getDoubleArr(x);
+		double[] yReal = Util.getDoubleArr(y);
+		double[] xWp = new double[points.length];
+		double[] yWp = new double[points.length];
+		
+		for (int i = 0; i < points.length; i++) {
+			xWp[i] = points[i].x;
+			yWp[i] = points[i].y;
+		}
+		
+		Plot2DPanel plot = new Plot2DPanel();
+		plot.addLinePlot("real space", xReal, yReal);
+		plot.addScatterPlot("real waypoints", xWp, yWp);
 		JFrame frame = new JFrame("x-y panel");
 		frame.setContentPane(plot);
 		frame.setSize(800, 600);
