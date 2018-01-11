@@ -6,10 +6,19 @@ public class Spline {
 	private static final int ARCLENGTH_SAMPLES = 100000;
 	public static class Point {
 		public double x,y,deriv = 0;
-		public Point(double x, double y, double deriv) {
+		public Point(double x, double y, double derivative, boolean bs) {
 			this.x = x;
 			this.y = y;
-			this.deriv = deriv;
+			this.deriv = derivative;
+		}
+		public Point(double x, double y, double bearingDegrees) {
+			this.x = x;
+			this.y = y;
+			this.deriv = Math.tan(Math.toRadians(90-bearingDegrees));
+			if (Double.isInfinite(deriv)) {
+				deriv = 1000000;
+			}
+			//TODO POTENTIALLY A REALLY BIG ISSUE THAT IT CAN'T REALLY GO LEFT (PROBABLY)
 		}
 		public String toString() {
 			return "("+x+", "+y+", "+deriv+")";
@@ -104,7 +113,7 @@ public class Spline {
 		}
 		return out;
 	}
-	public static Spline interpolate(Point... points) throws Exception {
+	public static Spline interpolate2(Point... points) throws Exception {
 		
 		if (points.length <= 1) {
 			throw new Exception("you must have 2+ points!");
@@ -172,5 +181,66 @@ public class Spline {
 			outs[q] = new Spline(x.get(0), x.get(n), splines);
 		}
 		return new Spline(points[0].x, points[points.length-1].x, outs);
+	}
+	public static Spline interpolate(Point... points) throws Exception {
+		if (points.length <= 1) {
+			throw new Exception("you must have 2+ points!");
+		}
+		List<Double> x = new ArrayList<Double>();
+		List<Double> y = new ArrayList<Double>();
+		for (int i = 0; i < points.length; i++) {
+			x.add(points[i].x);
+			y.add(points[i].y);
+		}
+		
+		double[] derivs = new double[]{points[0].deriv, points[points.length-1].deriv};
+		
+		int n = x.size()-1;
+		
+		double[] h = new double[n];
+		double[] a = new double[n+1];
+		double[] b = new double[n+1];
+		double[] c = new double[n+1];
+		double[] d = new double[n+1];
+		double[] alpha = new double[n+1];
+		
+		double[] l = new double[n+1];
+		double[] mew = new double[n];
+		double[] z = new double[n];
+		
+		for (int i = 0; i < h.length; i++) {
+			h[i] = x.get(i+1) - x.get(i);
+			a[i] = y.get(i);
+		}
+		a[n] = y.get(n);
+		
+		alpha[0] = 3*(a[1] - a[0]) / h[0] - 3*derivs[0];
+		for (int i = 1; i < n; i++) {
+			alpha[i] = 3/h[i] * (a[i+1] - a[i]) - 3/h[i-1]*(a[i] - a[i-1]);
+		}
+		alpha[n] = 3*derivs[1]-3/h[n-1]*(a[n]-a[n-1]);
+		
+		l[0] = 2*h[0];
+		mew[0] = 0.5;
+		z[0] = alpha[0] / l[0];
+		for (int i = 1; i < n; i++) {
+			l[i] = 2*(x.get(i+1) - x.get(i-1))-h[i-1]*mew[i-1];
+			mew[i] = h[i] / l[i];
+			z[i] = (alpha[i] - h[i-1]*z[i-1]) / l[i];
+		}
+		l[n] = h[n-1]*(2-mew[n-1]);
+		double zn = (alpha[n] - h[n-1]*z[n-1]) / l[n];
+		c[n] = zn;
+		
+		for (int j = n-1; j>=0; j--) {
+			c[j] = z[j] - mew[j] * c[j+1];
+			b[j] = (a[j+1] - a[j]) / h[j] - (h[j] * (c[j+1] + 2*c[j]))/3;
+			d[j] = (c[j+1] - c[j]) / (3*h[j]);
+		}
+		Spline[] splines = new Spline[n];
+		for (int i = 0; i < n; i++) {
+			splines[i] = new Spline(a[i], b[i], c[i], d[i], x.get(i), x.get(i+1)); 
+		}
+		return new Spline(points[0].x, points[points.length-1].x, splines);
 	}
 }

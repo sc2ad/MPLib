@@ -64,32 +64,32 @@ public class PathTest {
 //		run(movement);
 		
 		Spline.Point[] points = new Spline.Point[]{
-				new Spline.Point(-1, 0.86199480, 0.155362),
-				new Spline.Point(-0.5, 0.95802009, 0.232695), // Middle deriv is useless
-				// TODO IDEA: INCORPORATE HAVING AN INTEGRAL FOR A PATH THAT DOES X VS DERIVATIVE (SPLINE FITS THAT INSTEAD)
-				new Spline.Point(0, 1.0986123, 0.333333),
-				new Spline.Point(0.5, 1.2943767, 0.451863)};
-		Spline.Point[] derivPoints = new Spline.Point[]{
-				new Spline.Point(-1, 0.155362, 0.13122),
-				new Spline.Point(-0.5, 0.232695, 0),
-				new Spline.Point(0, 0.333333, 0),
-				new Spline.Point(0.5, 0.451863, 0.24768)
+				new Spline.Point(-1, 0.86199480, 0.155362, false),
+				new Spline.Point(-0.5, 0.95802009, 0.232695, false), // Middle deriv is useless
+				new Spline.Point(0, 1.0986123, 0.333333, false),
+				new Spline.Point(0.5, 1.2943767, 0.451863, false)};
+		Spline.Point[] frcPath = new Spline.Point[]{
+				new Spline.Point(0, 0, 0),
+				new Spline.Point(0.00001, 20, 2),
+				new Spline.Point(0.2, 60, 5),
+				new Spline.Point(30, 100, 30),
+				new Spline.Point(50, 180, 90)
 		};
 		try {
-			Spline s = Spline.interpolate(points);
+			Spline s = Spline.interpolate2(frcPath);
 			double nx = -1.1;
 			List<Double> x = new ArrayList<Double>();
 			List<Double> y = new ArrayList<Double>();
-			while (nx <= 1.04) {
+			while (nx <= 50.04) {
 				x.add(nx);
 				y.add(s.getY(nx));
 				System.out.println("x: "+nx+"\tyHat: "+s.getY(nx));
-				nx += 0.01;
+				nx += 0.05;
 			}
 			System.out.println();
 			System.out.println(s);
 			System.out.println(s.getArclength());
-			viewGraph(x,y,points);
+			viewGraph(x,y,frcPath);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
