@@ -62,12 +62,19 @@ public class PathTest {
 //		
 //		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
 //		run(movement);
+		
 		Spline.Point[] points = new Spline.Point[]{
 				new Spline.Point(-1, 0.86199480, 0.155362),
-				new Spline.Point(-0.5, 0.95802009, 0), // Middle deriv is useless
+				new Spline.Point(-0.5, 0.95802009, 0.232695), // Middle deriv is useless
 				// TODO IDEA: INCORPORATE HAVING AN INTEGRAL FOR A PATH THAT DOES X VS DERIVATIVE (SPLINE FITS THAT INSTEAD)
-				new Spline.Point(0, 1.0986123, 0),
+				new Spline.Point(0, 1.0986123, 0.333333),
 				new Spline.Point(0.5, 1.2943767, 0.451863)};
+		Spline.Point[] derivPoints = new Spline.Point[]{
+				new Spline.Point(-1, 0.155362, 0.13122),
+				new Spline.Point(-0.5, 0.232695, 0),
+				new Spline.Point(0, 0.333333, 0),
+				new Spline.Point(0.5, 0.451863, 0.24768)
+		};
 		try {
 			Spline s = Spline.interpolate(points);
 			double nx = -1.1;
@@ -77,10 +84,11 @@ public class PathTest {
 				x.add(nx);
 				y.add(s.getY(nx));
 				System.out.println("x: "+nx+"\tyHat: "+s.getY(nx));
-				nx += 0.05;
+				nx += 0.01;
 			}
 			System.out.println();
 			System.out.println(s);
+			System.out.println(s.getArclength());
 			viewGraph(x,y,points);
 		} catch (Exception e) {
 			e.printStackTrace();
