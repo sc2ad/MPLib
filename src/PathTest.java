@@ -1,15 +1,16 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
+
+import paths.CombinedPath;
+import paths.Hold;
+import paths.IntegralPath;
+import paths.LinearDerivativePath;
+import paths.MotionPath;
+import paths.Util;
 
 /**
  * Overarching class to run various paths.
@@ -54,13 +55,13 @@ public class PathTest {
 		// gyro test stuff?
 		CombinedPath movement = new CombinedPath.LongitudalTrapezoid(0, 250, 10, 50);
 		CombinedPath gyro = new CombinedPath.LongitudalTrapezoid(0, 30, 10, 50); // In this case, all units are in deg
-		OverlappingPath pasdfasdf = new OverlappingPath(movement, gyro);
 //		CombinedPath moveBack = new CombinedPath.LongitudalTrapezoid(100, -100, -10, -20);
 //		CombinedPath gyroBack = new CombinedPath.LongitudalTrapezoid(30, -30, -10, -50);
 //		OverlappingPath pfdsafdsa = new OverlappingPath(moveBack, gyroBack);
 //		
 //		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
 		run(pasdfasdf);
+//		run(movement);
 	}
 	/**
 	 * Displays various information about the path provided.

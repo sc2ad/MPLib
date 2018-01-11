@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,13 @@ public class Util {
 		double[] out = new double[list.size()];
 		for (int i = 0; i < out.length; i++) {
 			out[i] = list.get(i);
+		}
+		return out;
+	}
+	public static List<Double> getDoubleList(double[] list) {
+		List<Double> out = new ArrayList<Double>();
+		for (int i = 0; i < list.length; i++) {
+			out.add(list[i]);
 		}
 		return out;
 	}

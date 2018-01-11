@@ -13,3 +13,7 @@ hs_err_pid*
 
 \.classpath
 /bin/
+
+*.csv
+
+\.settings/org\.eclipse\.ltk\.core\.refactoring\.prefs
