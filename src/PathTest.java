@@ -61,7 +61,6 @@ public class PathTest {
 //		OverlappingPath pfdsafdsa = new OverlappingPath(moveBack, gyroBack);
 //		
 //		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
-		run(pasdfasdf);
 //		run(movement);
 		Spline.Point[] points = new Spline.Point[]{
 				new Spline.Point(-1, 0.86199480, 0.155362),
@@ -111,74 +110,6 @@ public class PathTest {
 //		System.out.println(p.getTotalDistance());
 		viewGraph(times,pos,spd,accel);
 		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel);
-	}
-	// This entire method is kinda a big BAD BAD BAD BAD *BAD* repeat
-	public static void run(GyroMotionPath p) {
-		double t = 0;
-		double sx=0, sy=0, lx=0, ly=0, ex=0, ey=0, tstart=0, tend=0;
-		
-		ArrayList<Double> times = new ArrayList<Double>();
-		ArrayList<Double> pos = new ArrayList<Double>();
-		ArrayList<Double> spd = new ArrayList<Double>();
-		ArrayList<Double> accel = new ArrayList<Double>();
-		ArrayList<Double> theta = new ArrayList<Double>();
-		ArrayList<Double> omega = new ArrayList<Double>();
-		ArrayList<Double> alpha = new ArrayList<Double>();
-		
-		ArrayList<Double> x = new ArrayList<Double>();
-		ArrayList<Double> y = new ArrayList<Double>();
-		
-		while (Util.lessThan(t, p.getTotalTime(), 0.00002)) {
-			System.out.println("Time: "+t+", Position: "+p.getPosition(t)+", Speed: "+p.getSpeed(t)+", Acceleration: "+p.getAccel(t)+", Angle: "+p.getAngle(t)+", Omega: "+p.getOmega(t)+", Alpha: "+p.getAlpha(t)+", (X,Y): ("+p.getX(t)+","+p.getY(t)+")");
-			times.add(t);
-			pos.add(p.getPosition(t));
-			spd.add(p.getSpeed(t));
-			accel.add(p.getAccel(t));
-			theta.add(p.getAngle(t));
-			omega.add(p.getOmega(t));
-			alpha.add(p.getAlpha(t));
-			if (p.getAlpha(t) == 0) {
-				// start!
-				if (sx == 0 && sy == 0) {
-					sx = p.getX(t);
-					sy = p.getY(t);
-					tstart = t;
-				}
-				lx = p.getX(t);
-				ly = p.getY(t);
-			} else {
-				ex = lx;
-				ey = ly;
-				if (tend == 0 && tstart != 0) {
-					tend = t;
-				}
-			}
-			x.add(p.getX(t));
-			y.add(p.getY(t));
-			t += 0.05;
-		}
-//		System.out.println(p.getTotalDistance());
-		System.out.println(sx);
-		System.out.println(sy);
-		System.out.println(ex);
-		System.out.println(ey);
-		System.out.println("\ndeltax: "+(ex-sx));
-		System.out.println("deltay: "+(ey-sy));
-		System.out.println("dt: "+(tend-tstart));
-		if (!Util.equals(p.getSpeed(tstart), p.getSpeed(tend), 0.00002) || !Util.equals(p.getOmega(tstart), p.getOmega(tend), 0.00002)) {
-			// validation check
-			System.out.println(p.getSpeed(tstart)+" != "+p.getSpeed(tend));
-			System.out.println(p.getOmega(tstart)+" != "+p.getOmega(tend));
-			throw new IllegalArgumentException("Accelerated during turn! Change params");
-		}
-		
-		System.out.println("dx: "+p.getX(tstart, tend, 20000));
-		System.out.println("dy: "+dy);
-		
-		viewGraph(times,pos,spd,accel);
-		viewGraph(times,theta,omega,alpha); // visualize theta curve at the same time
-		viewGraph(x,y);
-		Util.writeCSV(System.getProperty("user.dir")+"/out", times, spd, pos, accel, theta, omega, alpha, x, y);
 	}
 	/**
 	 * Graphs information on the following data lists.
