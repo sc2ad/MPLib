@@ -10,6 +10,7 @@ import paths.Hold;
 import paths.IntegralPath;
 import paths.LinearDerivativePath;
 import paths.MotionPath;
+import paths.Point;
 import paths.Spline;
 import paths.Util;
 
@@ -63,33 +64,67 @@ public class PathTest {
 //		GyroCombinedPath pasdf = new GyroCombinedPath(0, pasdfasdf, pfdsafdsa);
 //		run(movement);
 		
-		Spline.Point[] points = new Spline.Point[]{
-				new Spline.Point(-1, 0.86199480, 0.155362, false),
-				new Spline.Point(-0.5, 0.95802009, 0.232695, false), // Middle deriv is useless
-				new Spline.Point(0, 1.0986123, 0.333333, false),
-				new Spline.Point(0.5, 1.2943767, 0.451863, false)};
-		Spline.Point[] frcPath = new Spline.Point[]{
-				new Spline.Point(0, 0, 0),
-				new Spline.Point(0.00001, 20, 2),
-				new Spline.Point(0.2, 60, 5),
-				new Spline.Point(30, 100, 30),
-				new Spline.Point(50, 180, 90)
+//		Point[] points = new Point[]{
+//				new Point(-1, 0.86199480, 0.155362, false),
+//				new Point(-0.5, 0.95802009, 0.232695, false), // Middle deriv is useless
+//				new Point(0, 1.0986123, 0.333333, false),
+//				new Point(0.5, 1.2943767, 0.451863, false)};
+		Point[] frcPath = new Point[]{
+				new Point(0, 0, 0, 0, 0, 10),
+				new Point(0, 20, 0, 20, -5, 0),
+				new Point(-15, 50, -8, 20, 0, -5),
+				new Point(-30, 65, -8, 0, -10, 0),
+				new Point(-36, 65, 0, 0, 10, 0)
+		};
+		double vMax = 25;
+		Point[] frcPath2 = new Point[]{
+				new Point(0, 0, 0, 10, 0),
+				new Point(0, 50, vMax, 0, 20),
+				new Point(25, 90, vMax, 0, 100),
+				new Point(50, 80, vMax, -10, 140),
+				new Point(60, 50, 0, 0, 150)
+		};
+		Point[] frcPath3 = new Point[]{
+				new Point(0,0,vMax,0,0),
+				new Point(6.25, 12.5, vMax, 0, 90),
+				new Point(12.5, 0, vMax, 0, 180),
+				new Point(6.25, -12.5, vMax, 0, 270),
+				new Point(0,0, vMax, 0, 360)
 		};
 		try {
-			Spline s = Spline.interpolate2(frcPath);
-			double nx = -1.1;
+			Spline[] xyspl = Spline.interpolateQuintic(frcPath2);
+			
+			double t = 0;
+			List<Double> time = new ArrayList<Double>();
 			List<Double> x = new ArrayList<Double>();
 			List<Double> y = new ArrayList<Double>();
-			while (nx <= 50.04) {
-				x.add(nx);
-				y.add(s.getY(nx));
-				System.out.println("x: "+nx+"\tyHat: "+s.getY(nx));
-				nx += 0.05;
+			List<Double> derivX = new ArrayList<Double>();
+			List<Double> derivY = new ArrayList<Double>();
+			List<Double> derivYX = new ArrayList<Double>();
+			while (t <= xyspl[0].seconds) {
+				double xx = xyspl[0].get(t);
+				double yy = xyspl[1].get(t);
+				time.add(t);
+				x.add(xx);
+				y.add(yy);
+				derivX.add(xyspl[0].getDerivative(t));
+				derivY.add(xyspl[1].getDerivative(t));
+				derivYX.add(xyspl[1].getDerivative(t)/xyspl[0].getDerivative(t));
+				System.out.println("xHat: "+xx+"\tyHat: "+yy);
+				t += 0.01;
 			}
-			System.out.println();
-			System.out.println(s);
-			System.out.println(s.getArclength());
-			viewGraph(x,y,frcPath);
+			System.out.println("X:\n"+xyspl[0]);
+			System.out.println("Y:\n"+xyspl[1]);
+			System.out.println(xyspl[0].getArclength());
+			System.out.println(xyspl[1].getArclength());
+			derivYX.remove(0);
+			derivYX.add(derivYX.get(derivYX.size()-1));
+			viewGraph(x,y,frcPath2);
+			viewGraph(time,derivX);
+			viewGraph(time,derivY);
+			viewGraph(time,x);
+			viewGraph(time,y);
+			viewGraph(time,derivYX);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -153,7 +188,7 @@ public class PathTest {
 		frame.setSize(800, 600);
 		frame.setVisible(true);
 	}
-	public static void viewGraph(List<Double> x, List<Double> y, Spline.Point[] points) {
+	public static void viewGraph(List<Double> x, List<Double> y, Point[] points) {
 		double[] xReal = Util.getDoubleArr(x);
 		double[] yReal = Util.getDoubleArr(y);
 		double[] xWp = new double[points.length];

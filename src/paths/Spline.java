@@ -2,87 +2,69 @@ package paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Spline {
+public class Spline implements PotentialSpline {
 	private static final int ARCLENGTH_SAMPLES = 100000;
-	public static class Point {
-		public double x,y,deriv = 0;
-		public Point(double x, double y, double derivative, boolean bs) {
-			this.x = x;
-			this.y = y;
-			this.deriv = derivative;
-		}
-		public Point(double x, double y, double bearingDegrees) {
-			this.x = x;
-			this.y = y;
-			this.deriv = Math.tan(Math.toRadians(90-bearingDegrees));
-			if (Double.isInfinite(deriv)) {
-				deriv = 1000000;
-			}
-			//TODO POTENTIALLY A REALLY BIG ISSUE THAT IT CAN'T REALLY GO LEFT (PROBABLY)
-		}
-		public String toString() {
-			return "("+x+", "+y+", "+deriv+")";
-		}
-	}
-	private double a, b, c, d = 0;
-	private double x0, x1;
+	private double x0, x1, v0, v1, a0, a1;
 	private double arclength;
 	private Spline[] splines;
-	public Spline(double a, double b, double c, double d, double x0, double x1) {
-		this.a = a;
-		this.b = b;
-		this.c = c;
-		this.d = d;
-		this.x0 = x0;
-		this.x1 = x1;
-		splines = new Spline[]{this};
-	}
+	public double seconds;
 	public Spline(double x0, double x1, Spline... a) {
 		splines = a;
 		if (a.length == 1) {
-			this.a = a[0].a;
-			b = a[0].b;
-			c = a[0].c;
-			d = a[0].d;
+			v0 = a[0].v0;
+			v1 = a[a.length-1].v1;
+			a0 = a[0].a0;
+			a1 = a[a.length-1].a1;
 		}
 		this.x0 = x0;
 		this.x1 = x1;
+		seconds = a.length;
 	}
-	public double getY(double x) {
+	public Spline(double x0, double x1, double v0, double v1, double a0, double a1) {
+		this.x0 = x0;
+		this.x1 = x1;
+		this.v0 = v0;
+		this.v1 = v1;
+		this.a0 = a0;
+		this.a1 = a1;
+		splines = new Spline[]{this};
+		seconds = 1;
+	}
+	public double get(double t) {
 		// X Value is out of range of the splines.
-		if (x < splines[0].x0) {
+		if (t < 0) {
 			// Too small of an x
-			return splines[0].getY(splines[0].x0);
+			return splines[0].get(0);
 		}
-		if (x > splines[splines.length-1].x1) {
-			return splines[splines.length-1].getY(splines[splines.length-1].x1);
+		if (t > seconds) {
+			return splines[splines.length-1].get(1);
 		}
 		if (splines.length == 1) {
-			return a + b * (x - x0) + c * Math.pow(x - x0, 2) + d * Math.pow(x - x0, 3);
+			return (1 - 3*t*t + 2*t*t*t)*x0 + (t - 2*t*t + t*t*t)*v0 + (-t*t + t*t*t)*v1 + (3*t*t - 2*t*t*t)*x1;
 		}
 		for (int i = 0; i < splines.length; i++) {
-			if (x >= splines[i].x0 && x <= splines[i].x1) {
-				return splines[i].getY(x);
+			if (t >= i && t <= i+1) {
+				return splines[i].get(t - i);
 			}
 		}
 		
 		return Double.NaN; // Never happens!
 	}
-	public double getDerivative(double x) {
+	public double getDerivative(double t) {
 		// X Value is out of range of the splines.
-		if (x < splines[0].x0) {
+		if (t < 0) {
 			// Too small of an x
-			return splines[0].getDerivative(splines[0].x0);
+			return splines[0].getDerivative(0);
 		}
-		if (x > splines[splines.length-1].x1) {
-			return splines[splines.length-1].getDerivative(splines[splines.length-1].x1);
+		if (t > seconds) {
+			return splines[splines.length-1].getDerivative(1);
 		}
 		if (splines.length == 1) {
-			return b + (x - x0)*(2*c + 3*d*(x - x0));
+			return (3*t*t - 4*t + 1)*v0 + t*(3*t - 2)*v1 + 6*(t - 1)*(x0 - x1);
 		}
 		for (int i = 0; i < splines.length; i++) {
-			if (x >= splines[i].x0 && x <= splines[i].x1) {
-				return splines[i].getDerivative(x);
+			if (t >= i && t <= i+1) {
+				return splines[i].getDerivative(t - i);
 			}
 		}
 		
@@ -94,7 +76,7 @@ public class Spline {
 		}
 		if (splines.length == 1) {
 			for (int i = 0; i < ARCLENGTH_SAMPLES; i++) {
-				arclength += Math.sqrt(Math.pow(getDerivative(x0 + (x1-x0)*i / ARCLENGTH_SAMPLES), 2) + 1) * (x1-x0)/ARCLENGTH_SAMPLES;
+				arclength += Math.sqrt(Math.pow(getDerivative(i / ARCLENGTH_SAMPLES), 2) + 1) * 1/ARCLENGTH_SAMPLES;
 			}
 			return arclength;
 		}
@@ -105,11 +87,11 @@ public class Spline {
 	}
 	public String toString() {
 		if (splines.length <= 1) {
-			return "a: "+a+"\nb: "+b+"\nc: "+c+"\nd: "+d;
+			return "x0: "+x0+"\nx1: "+x1+"\nv0: "+v0+"\nv1: "+v1+"\na0: "+a0+"\na1: "+a1;
 		}
 		String out = "";
 		for (Spline s : splines) {
-			out+= "a: "+s.a+"\tb: "+s.b+"\tc: "+s.c+"\td: "+s.d+"\n";
+			out+= "x0: "+s.x0+"\tv0: "+s.v0+"\ta0: "+s.a0+"\tx1: "+s.x1+"\tv1: "+s.v1+"\ta1: "+s.a1+"\n";
 		}
 		return out;
 	}
@@ -129,7 +111,7 @@ public class Spline {
 			x.add(points[q+1].x);
 			y.add(points[q].y);
 			y.add(points[q+1].y);
-			double[] derivs = new double[]{points[q].deriv, points[q+1].deriv};
+			double[] derivs = new double[]{points[q].vx, points[q+1].vx};
 			
 			int n = x.size()-1;
 			
@@ -193,7 +175,7 @@ public class Spline {
 			y.add(points[i].y);
 		}
 		
-		double[] derivs = new double[]{points[0].deriv, points[points.length-1].deriv};
+		double[] derivs = new double[]{points[0].vx, points[points.length-1].vx};
 		
 		int n = x.size()-1;
 		
@@ -242,5 +224,27 @@ public class Spline {
 			splines[i] = new Spline(a[i], b[i], c[i], d[i], x.get(i), x.get(i+1)); 
 		}
 		return new Spline(points[0].x, points[points.length-1].x, splines);
+	}
+	public static Spline[] interpolateQuintic(Point... points) {
+		if (points.length <= 1) {
+			throw new IllegalArgumentException("There must be at least two points!");
+		}
+		SimplePoint[] xsimples = new SimplePoint[points.length];
+		SimplePoint[] ysimples = new SimplePoint[points.length];
+		for (int i = 0; i < points.length; i++) {
+			xsimples[i] = new SimplePoint(points[i].x, points[i].vx, points[i].ax);
+			ysimples[i] = new SimplePoint(points[i].y, points[i].vy, points[i].ay);
+		}
+		Spline xSpline = getSpline(xsimples);
+		Spline ySpline = getSpline(ysimples);
+		
+		return new Spline[]{xSpline, ySpline};
+	}
+	private static Spline getSpline(SimplePoint... simples) {
+		Spline[] spl = new Spline[simples.length - 1];
+		for (int i = 0; i < spl.length; i++) {
+			spl[i] = new Spline(simples[i].pos, simples[i+1].pos, simples[i].vel, simples[i+1].vel, simples[i].accel, simples[i+1].accel);
+		}
+		return new Spline(simples[0].pos, simples[simples.length-1].pos, spl);
 	}
 }
