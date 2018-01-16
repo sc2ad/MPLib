@@ -60,7 +60,7 @@ public class Spline implements PotentialSpline {
 			return splines[splines.length-1].getDerivative(1);
 		}
 		if (splines.length == 1) {
-			return (3*t*t - 4*t + 1)*v0 + t*(3*t - 2)*v1 + 6*(t - 1)*(x0 - x1);
+			return (1 - 4*t + 3*t*t)*v0 + t*(-2 + 3*t)*v1 + 6*(-1 + t)*t*(x0 - x1);
 		}
 		for (int i = 0; i < splines.length; i++) {
 			if (t >= i && t <= i+1) {

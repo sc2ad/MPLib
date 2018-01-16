@@ -70,11 +70,9 @@ public class PathTest {
 //				new Point(0, 1.0986123, 0.333333, false),
 //				new Point(0.5, 1.2943767, 0.451863, false)};
 		Point[] frcPath = new Point[]{
-				new Point(0, 0, 0, 0, 0, 10),
-				new Point(0, 20, 0, 20, -5, 0),
-				new Point(-15, 50, -8, 20, 0, -5),
-				new Point(-30, 65, -8, 0, -10, 0),
-				new Point(-36, 65, 0, 0, 10, 0)
+				new Point(-23.6, -6.6, 3.5, 1.2, 3, -8.2),
+				new Point(-8.65, 5.5, 23.4, 12.8, 2.1, 4.72),
+				new Point(28.24, 4.3, -6.9, -3.3, 12.5, 13)
 		};
 		double vMax = 25;
 		Point[] frcPath2 = new Point[]{
@@ -92,7 +90,7 @@ public class PathTest {
 				new Point(0,0, vMax, 0, 360)
 		};
 		try {
-			Spline[] xyspl = Spline.interpolateQuintic(frcPath2);
+			Spline[] xyspl = Spline.interpolateQuintic(frcPath);
 			
 			double t = 0;
 			List<Double> time = new ArrayList<Double>();
@@ -119,7 +117,7 @@ public class PathTest {
 			System.out.println(xyspl[1].getArclength());
 			derivYX.remove(0);
 			derivYX.add(derivYX.get(derivYX.size()-1));
-			viewGraph(x,y,frcPath2);
+			viewGraph(x,y,frcPath);
 			viewGraph(time,derivX);
 			viewGraph(time,derivY);
 			viewGraph(time,x);
