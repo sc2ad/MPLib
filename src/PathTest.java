@@ -11,7 +11,9 @@ import paths.IntegralPath;
 import paths.LinearDerivativePath;
 import paths.MotionPath;
 import paths.Point;
+import paths.Position;
 import paths.Spline;
+import paths.Trajectory;
 import paths.Util;
 
 /**
@@ -57,6 +59,8 @@ public class PathTest {
 		// gyro test stuff?
 		CombinedPath movement = new CombinedPath.LongitudalTrapezoid(0, 250, 10, 50);
 		CombinedPath gyro = new CombinedPath.LongitudalTrapezoid(0, 30, 10, 50); // In this case, all units are in deg
+//		CombinedPath gggg = new CombinedPath.LongitudalTrapezoid(90, 0, -90, -240);
+//		run(gggg);
 //		CombinedPath moveBack = new CombinedPath.LongitudalTrapezoid(100, -100, -10, -20);
 //		CombinedPath gyroBack = new CombinedPath.LongitudalTrapezoid(30, -30, -10, -50);
 //		OverlappingPath pfdsafdsa = new OverlappingPath(moveBack, gyroBack);
@@ -89,9 +93,9 @@ public class PathTest {
 				new Point(6.25, -12.5, vMax, 0, 270),
 				new Point(0,0, vMax, 0, 360)
 		};
+		
+		Spline[] xyspl = Spline.interpolateQuintic(frcPath);
 		try {
-			Spline[] xyspl = Spline.interpolateQuintic(frcPath);
-			
 			double t = 0;
 			List<Double> time = new ArrayList<Double>();
 			List<Double> x = new ArrayList<Double>();
@@ -126,6 +130,40 @@ public class PathTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Trajectory traj = new Trajectory(xyspl);
+		Position[][] poses = traj.getLeftRightPositions(1);
+		try {
+			List<Double> time = new ArrayList<Double>();
+			List<Double> x = new ArrayList<Double>();
+			List<Double> y = new ArrayList<Double>();
+			List<Double> derivX = new ArrayList<Double>();
+			List<Double> derivY = new ArrayList<Double>();
+			List<Double> heading = new ArrayList<Double>();
+			Position[] left = poses[0];
+			Position[] right = poses[1];
+			double t = 0;
+			while (t <= xyspl[0].seconds) {
+				double xx = traj.getX(t);
+				double yy = traj.getY(t);
+				time.add(t);
+				x.add(xx);
+				y.add(yy);
+				derivX.add(xyspl[0].getDerivative(t));
+				derivY.add(xyspl[1].getDerivative(t));
+				heading.add(traj.getHeading(t));
+				System.out.println("xHat: "+xx+"\tyHat: "+yy);
+				t += 0.01;
+			}
+			System.out.println(traj.getLeftArclength());
+			System.out.println(traj.getRightArclength());
+			viewGraph(x, y, left, right);
+			viewGraph(time, heading);
+			viewGraph(time, derivX);
+			viewGraph(time, derivY);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Displays various information about the path provided.
@@ -140,7 +178,7 @@ public class PathTest {
 		ArrayList<Double> spd = new ArrayList<Double>();
 		ArrayList<Double> accel = new ArrayList<Double>();
 		
-		while (Util.lessThan(t, p.getTotalTime(), 0.00002)) {
+		while (Util.lessThan(t, p.getTotalTime()+1, 0.00002)) {
 			System.out.println("Time: "+t+", Position: "+p.getPosition(t)+", Speed: "+p.getSpeed(t)+", Acceleration: "+p.getAccel(t));
 			times.add(t);
 			pos.add(p.getPosition(t));
@@ -201,6 +239,29 @@ public class PathTest {
 		plot.addLinePlot("real space", xReal, yReal);
 		plot.addScatterPlot("real waypoints", xWp, yWp);
 		JFrame frame = new JFrame("x-y panel");
+		frame.setContentPane(plot);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+	}
+	public static void viewGraph(List<Double> x, List<Double> y, Position[] left, Position[] right) {
+		double[] xReal = Util.getDoubleArr(x);
+		double[] yReal = Util.getDoubleArr(y);
+		
+		double[] lx = new double[left.length];
+		double[] ly = new double[left.length];
+		double[] rx = new double[right.length];
+		double[] ry = new double[right.length];
+		for (int i = 0; i < left.length; i++) {
+			lx[i] = left[i].x;
+			ly[i] = left[i].y;
+			rx[i] = right[i].x;
+			ry[i] = right[i].y;
+		}
+		Plot2DPanel plot = new Plot2DPanel();
+		plot.addLinePlot("real space", xReal, yReal);
+		plot.addLinePlot("left", lx, ly);
+		plot.addLinePlot("right", rx, ry);
+		JFrame frame = new JFrame("triple curves");
 		frame.setContentPane(plot);
 		frame.setSize(800, 600);
 		frame.setVisible(true);

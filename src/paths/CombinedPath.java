@@ -35,7 +35,7 @@ public class CombinedPath implements MotionPath {
 			p[2] = new LinearDerivativePath(maxV, 0, -a);
 			// The cruise one is the one we know the LEAST about, need to use positions of others
 			p[1] = new LinearDerivativePath(distance - 2 * p[0].getTotalDistance(), maxV);
-			if (p[0].getTotalDistance() > distance / 2) {
+			if (Math.abs(p[0].getTotalDistance()) > Math.abs(distance / 2)) {
 				// Need to setup a triangle instead
 				// 1/2at^2 = distance/2
 				double newTime = Math.sqrt(distance / a);
@@ -118,7 +118,7 @@ public class CombinedPath implements MotionPath {
 				return time - sum;
 			}
 		}
-		return time - maxSum; // should never happen
+		return 0; // should never happen
 	}
 	
 	/**

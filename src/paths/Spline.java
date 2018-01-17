@@ -70,6 +70,25 @@ public class Spline implements PotentialSpline {
 		
 		return Double.NaN; // Never happens!
 	}
+	public double getSecondDerivative(double t) {
+		// X Value is out of range of the splines.
+		if (t < 0) {
+			// Too small
+			return splines[0].getDerivative(0);
+		}
+		if (t > seconds) {
+			return splines[splines.length-1].getSecondDerivative(1);
+		}
+		if (splines.length == 1) {
+			return 2 * ((-2 + 3*t)*v0 + (-1 + 3*t)*v1 + 3*(-1 + 2*t)*(x0 - x1));
+		}
+		for (int i = 0; i < splines.length; i++) {
+			if (t >= i && t <= i+1) {
+				return splines[i].getSecondDerivative(t - i);
+			}
+		}
+		return Double.NaN; // Never ever ever
+	}
 	public double getArclength() {
 		if (arclength != 0) {
 			return arclength;

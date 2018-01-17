@@ -27,6 +27,23 @@ public class Util {
 	public static boolean lessThan(double a, double b, double error) {
 		return a < b - error || a < b + error;
 	}
+	public static double getAngle(double alpha, double dxdt, double dydt) {
+		double angle = 0;
+		if (dydt > 0 && dxdt > 0) {
+			// Q1
+			angle = alpha;
+		} else if (dydt > 0 && dxdt < 0) {
+			// Q2
+			angle = 180 + alpha;
+		} else if (dydt < 0 && dxdt < 0) {
+			// Q3
+			angle = 180 + alpha;
+		} else if (dydt < 0 && dxdt > 0) {
+			// Q4
+			angle = alpha;
+		}
+		return 90 - angle;
+	}
 	/*
 	 * 
 	 */
