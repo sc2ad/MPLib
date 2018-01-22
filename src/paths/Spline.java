@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Spline implements PotentialSpline {
 	private static final int ARCLENGTH_SAMPLES = 100000;
-	private double x0, x1, v0, v1, a0, a1;
+	public double x0, x1, v0, v1, a0, a1;
 	private double arclength;
 	private Spline[] splines;
 	public double seconds;
@@ -88,6 +88,9 @@ public class Spline implements PotentialSpline {
 			}
 		}
 		return Double.NaN; // Never ever ever
+	}
+	public Spline getSpline(int index) {
+		return splines[index];
 	}
 	public double getArclength() {
 		if (arclength != 0) {

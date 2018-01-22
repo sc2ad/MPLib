@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
+import extra.RobotPathFollower;
 import paths.CombinedPath;
 import paths.Hold;
 import paths.IntegralPath;
@@ -12,6 +13,7 @@ import paths.LinearDerivativePath;
 import paths.MotionPath;
 import paths.Point;
 import paths.Position;
+import paths.RobotPath;
 import paths.Spline;
 import paths.Trajectory;
 import paths.Util;
@@ -122,15 +124,17 @@ public class PathTest {
 			derivYX.remove(0);
 			derivYX.add(derivYX.get(derivYX.size()-1));
 			viewGraph(x,y,frcPath);
-			viewGraph(time,derivX);
-			viewGraph(time,derivY);
-			viewGraph(time,x);
-			viewGraph(time,y);
+//			viewGraph(time,derivX);
+//			viewGraph(time,derivY);
+//			viewGraph(time,x);
+//			viewGraph(time,y);
 			viewGraph(time,derivYX);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Trajectory traj = new Trajectory(xyspl);
+		List<Double> heading = new ArrayList<Double>();
+		List<Double> curvature = new ArrayList<Double>();
 		Position[][] poses = traj.getLeftRightPositions(1);
 		try {
 			List<Double> time = new ArrayList<Double>();
@@ -138,7 +142,7 @@ public class PathTest {
 			List<Double> y = new ArrayList<Double>();
 			List<Double> derivX = new ArrayList<Double>();
 			List<Double> derivY = new ArrayList<Double>();
-			List<Double> heading = new ArrayList<Double>();
+			List<Double> omegas = new ArrayList<Double>();
 			Position[] left = poses[0];
 			Position[] right = poses[1];
 			double t = 0;
@@ -151,19 +155,67 @@ public class PathTest {
 				derivX.add(xyspl[0].getDerivative(t));
 				derivY.add(xyspl[1].getDerivative(t));
 				heading.add(traj.getHeading(t));
+				curvature.add(traj.getCurvature(t));
+				omegas.add(traj.getOmega(t));
 				System.out.println("xHat: "+xx+"\tyHat: "+yy);
 				t += 0.01;
 			}
 			System.out.println(traj.getLeftArclength());
 			System.out.println(traj.getRightArclength());
+			System.out.println(traj.getArclength());
 			viewGraph(x, y, left, right);
 			viewGraph(time, heading);
-			viewGraph(time, derivX);
-			viewGraph(time, derivY);
+			viewGraph(time, curvature);
+//			viewGraph(time, derivX);
+//			viewGraph(time, derivY);
+			viewGraph(time, omegas);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature));
+		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
+		double v = 10, a = 10, omega = 50;
+		List<Double> time = new ArrayList<Double>();
+		List<Double> head = new ArrayList<Double>();
+		List<Double> omeg = new ArrayList<Double>();
+		List<Double> left = new ArrayList<Double>();
+		List<Double> right = new ArrayList<Double>();
+		List<Double> leftV = new ArrayList<Double>();
+		List<Double> rightV = new ArrayList<Double>();
+		List<Double> leftA = new ArrayList<Double>();
+		List<Double> rightA = new ArrayList<Double>();
+		List<Double> leftF = new ArrayList<Double>();
+		List<Double> rightF = new ArrayList<Double>();
+		MotionPath[] pafs = path.getLeftRightPaths(v, a, omega);
+		double width = 22, wheelDiameter = 6, ticksPerRev = 1024;
+		RobotPathFollower follower = new RobotPathFollower(width, wheelDiameter, ticksPerRev, new double[]{0,0,0,1.0/path.getMaxVelocity()}, new double[]{0,0,0,1.0/path.getMaxVelocity()});
+		follower.setPath(path);
+		follower.start();
+		double t = 0;
+		while (t <= path.getMainPath().getTotalTime()) {
+			time.add(t);
+			head.add(path.getHeading(t));
+			left.add(pafs[0].getPosition(t));
+			right.add(pafs[1].getPosition(t));
+			leftV.add(pafs[0].getSpeed(t));
+			rightV.add(pafs[1].getSpeed(t));
+			leftA.add(pafs[0].getAccel(t));
+			rightA.add(pafs[1].getAccel(t));
+			omeg.add(path.getOmega(t));
+			double lOut = follower.getLeftOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
+			double rOut = follower.getRightOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
+			System.out.println(lOut+", "+rOut+", "+follower.getDeltaV(t));
+			leftF.add(lOut);
+			rightF.add(rOut);
+			t += 0.025;
+		}
+		viewGraph(time, head);
+		viewGraph(time, omeg);
+		viewGraph(time, left, leftV, leftA);
+		viewGraph(time, right, rightV, rightA);
+		viewGraph(time, leftF);
+		viewGraph(time, rightF);
 	}
 	/**
 	 * Displays various information about the path provided.
