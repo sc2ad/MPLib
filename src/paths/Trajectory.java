@@ -26,14 +26,16 @@ public class Trajectory {
 		double dydt = xySplines[1].getDerivative(time);
 		double dxdt = xySplines[0].getDerivative(time);
 //		double dydx = dydt / dxdt;
-		return Math.toDegrees(Math.atan2(dydt, dxdt)); // Could be faster
+		return 90 - Math.toDegrees(Math.atan2(dydt, dxdt)); // Could be faster
 	}
 	public double getOmega(double t) {
+		// THIS IS IN SPLINE SECONDS PLEASE PLEASE PLEASRE PLEASE OAJFP LEOJFAHKGH LKHJF CONVERT TO NORMAL UNITS OF MEASUREMENT LIKE SECONDS
 		double heading = getHeading(t);
 		if (lastTime == -1 || lastTime > t) {
 			lastHeading = heading;
 			lastTime = t;
-			return 0;
+			heading = getHeading(t+0.0125); // Magic number used here to depict correct omega at stat point
+			return (heading - lastHeading) / (0.0125);
 		}
 		if (t == lastTime) {
 			return omega;

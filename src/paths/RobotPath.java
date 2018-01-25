@@ -28,6 +28,10 @@ public class RobotPath {
 	public MotionPath getMainPath() {
 		return centralPath;
 	}
+	public void constructMainPath(double vMax, double aMax, double omegaMax) {
+		double vReal = vMax > omegaMax / getMaxCurvature() ? omegaMax / getMaxCurvature() : vMax; // Properly sets velocity due to path constraints (this limits entire path)
+		centralPath = new CombinedPath.LongitudalTrapezoid(0, traj.getArclength(), vReal, aMax);
+	}
 	public MotionPath[] getLeftRightPaths(double vMax, double aMax, double omegaMax) {
 		// TODO add unit conversion
 		// Need to develop a path that can have the proper velocity only when omega does not work, instead of limiting the entire path's speed
@@ -46,6 +50,7 @@ public class RobotPath {
 		return traj.getHeading(traj.seconds * time / getMainPath().getTotalTime());
 	}
 	public double getOmega(double time) {
-		return traj.getOmega(traj.seconds * time / getMainPath().getTotalTime());
+		// Also converts to degrees / second
+		return traj.getOmega(traj.seconds * time / getMainPath().getTotalTime()) * (traj.seconds / getMainPath().getTotalTime());
 	}
 }

@@ -128,14 +128,14 @@ public class PathTest {
 //			viewGraph(time,derivY);
 //			viewGraph(time,x);
 //			viewGraph(time,y);
-			viewGraph(time,derivYX);
+//			viewGraph(time,derivYX);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Trajectory traj = new Trajectory(xyspl);
 		List<Double> heading = new ArrayList<Double>();
 		List<Double> curvature = new ArrayList<Double>();
-		Position[][] poses = traj.getLeftRightPositions(1);
+		Position[][] poses = traj.getLeftRightPositions(22);
 		try {
 			List<Double> time = new ArrayList<Double>();
 			List<Double> x = new ArrayList<Double>();
@@ -165,7 +165,7 @@ public class PathTest {
 			System.out.println(traj.getArclength());
 			viewGraph(x, y, left, right);
 			viewGraph(time, heading);
-			viewGraph(time, curvature);
+//			viewGraph(time, curvature);
 //			viewGraph(time, derivX);
 //			viewGraph(time, derivY);
 			viewGraph(time, omegas);
@@ -187,12 +187,23 @@ public class PathTest {
 		List<Double> rightA = new ArrayList<Double>();
 		List<Double> leftF = new ArrayList<Double>();
 		List<Double> rightF = new ArrayList<Double>();
+		List<Double> leftP = new ArrayList<Double>();
+		List<Double> rightP = new ArrayList<Double>();
+		List<Double> middleP = new ArrayList<Double>();
+		List<Double> mx = new ArrayList<Double>();
+		List<Double> my = new ArrayList<Double>();
+		List<Position> l = new ArrayList<Position>();
+//		List<Double> ly = new ArrayList<Double>();
+		List<Position> r = new ArrayList<Position>();
+//		List<Double> ry = new ArrayList<Double>();
+		double leftI = 0, rightI = 0, middleI = 0, middleX = frcPath[0].x, middleY = frcPath[0].y, leftX = 0, leftY = 0, rightX = 0, rightY = 0;
 		MotionPath[] pafs = path.getLeftRightPaths(v, a, omega);
 		double width = 22, wheelDiameter = 6, ticksPerRev = 1024;
 		RobotPathFollower follower = new RobotPathFollower(width, wheelDiameter, ticksPerRev, new double[]{0,0,0,1.0/path.getMaxVelocity()}, new double[]{0,0,0,1.0/path.getMaxVelocity()});
 		follower.setPath(path);
 		follower.start();
 		double t = 0;
+		boolean setup = false;
 		while (t <= path.getMainPath().getTotalTime()) {
 			time.add(t);
 			head.add(path.getHeading(t));
@@ -208,6 +219,35 @@ public class PathTest {
 			System.out.println(lOut+", "+rOut+", "+follower.getDeltaV(t));
 			leftF.add(lOut);
 			rightF.add(rOut);
+			leftP.add(leftI);
+			rightP.add(rightI);
+			middleP.add(middleI);
+			leftI += lOut * 0.025;
+			rightI += rOut * 0.025;
+			middleI += (lOut + rOut) / 2 * 0.025;
+			// Convert the following back into units instead of ticks
+			if (!setup) {
+				setup = true;
+				// NEED TO FIX THIS ERROR CHECKING SHENANIGANS
+				// setup initial points correctly
+				leftX = traj.getX(t) - follower.convertToUnits(lOut) * width / 2 * Math.cos(Math.toRadians(path.getHeading(t)));
+				leftY = traj.getY(t) + follower.convertToUnits(lOut) * width / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
+				rightX = traj.getX(t) + follower.convertToUnits(rOut) * width / 2 * Math.cos(Math.toRadians(path.getHeading(t)));
+				rightY = traj.getY(t) - follower.convertToUnits(rOut) * width / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
+			} else {
+				leftX += follower.convertToUnits(lOut) * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
+				leftY += follower.convertToUnits(lOut) * 0.025 * Math.cos(Math.toRadians(path.getHeading(t)));
+				rightX += follower.convertToUnits(rOut) * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
+				rightY += follower.convertToUnits(rOut) * 0.025 * Math.cos(Math.toRadians(path.getHeading(t)));
+			}
+			mx.add(middleX);
+			my.add(middleY);
+			l.add(new Position(leftX, leftY, path.getHeading(t)));
+//			ly.add(leftY);
+			r.add(new Position(rightX, rightY, path.getHeading(t)));
+//			ry.add(rightY);
+			middleX += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
+			middleY += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * 0.025 * Math.cos(Math.toRadians(path.getHeading(t))); 
 			t += 0.025;
 		}
 		viewGraph(time, head);
@@ -216,6 +256,17 @@ public class PathTest {
 		viewGraph(time, right, rightV, rightA);
 		viewGraph(time, leftF);
 		viewGraph(time, rightF);
+		viewGraph(time, leftP);
+		viewGraph(time, rightP);
+		viewGraph(time, middleP);
+		viewGraph(mx, my, frcPath);
+		Position[] tempL = new Position[l.size()];
+		Position[] tempR = new Position[r.size()];
+		for (int i = 0; i < tempL.length; i++) {
+			tempL[i] = l.get(i);
+			tempR[i] = r.get(i);
+		}
+		viewGraph(mx, my, tempL, tempR);
 	}
 	/**
 	 * Displays various information about the path provided.

@@ -20,7 +20,7 @@ public class RobotPathFollower {
 	public double getDeltaV(double time) {
 		// deg / s * rot / deg * units / rot
 		double omega = path.getOmega(time);
-		return omega / 360.0 * width * Math.PI;
+		return omega / 360.0 * width * Math.PI / 2; // This / 2 seems to actually do the trick...
 	}
 	public double getLeftVelocity(double time) {
 		return path.getMainPath().getSpeed(time) + getDeltaV(time) / 2;
@@ -39,6 +39,9 @@ public class RobotPathFollower {
 	public double convertToTicks(double value) {
 		// units * rot / units * ticks / rot
 		return value / (wheelDiameter * Math.PI) * ticksPerRevolution;
+	}
+	public double convertToUnits(double ticks) {
+		return ticks * (wheelDiameter * Math.PI) / ticksPerRevolution;
 	}
 	public void start() {
 		left.reset();
