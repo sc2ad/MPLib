@@ -90,6 +90,12 @@ public class Trajectory {
 	public double getX(double time) {
 		return xySplines[0].get(time);
 	}
+	public double getXDerivative(double time) {
+		return xySplines[0].getDerivative(time);
+	}
+	public double getYDerivative(double time) {
+		return xySplines[1].getDerivative(time);
+	}
 	public double getArclength() {
 		// Seems slightly off when compared to desmos (off by about 1)
 		if (arclength == 0) {

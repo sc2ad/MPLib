@@ -230,15 +230,15 @@ public class PathTest {
 				setup = true;
 				// NEED TO FIX THIS ERROR CHECKING SHENANIGANS
 				// setup initial points correctly
-				leftX = traj.getX(t) - follower.convertToUnits(lOut) * width / 2 * Math.cos(Math.toRadians(path.getHeading(t)));
-				leftY = traj.getY(t) + follower.convertToUnits(lOut) * width / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
-				rightX = traj.getX(t) + follower.convertToUnits(rOut) * width / 2 * Math.cos(Math.toRadians(path.getHeading(t)));
-				rightY = traj.getY(t) - follower.convertToUnits(rOut) * width / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
+				leftX = traj.getX(t) - width / 2 * traj.getYDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
+				leftY = traj.getY(t) + width / 2 * traj.getXDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
+				rightX = traj.getX(t) + width / 2 * traj.getYDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
+				rightY = traj.getY(t) - width / 2 * traj.getXDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
 			} else {
-				leftX += follower.convertToUnits(lOut) * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
-				leftY += follower.convertToUnits(lOut) * 0.025 * Math.cos(Math.toRadians(path.getHeading(t)));
-				rightX += follower.convertToUnits(rOut) * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
-				rightY += follower.convertToUnits(rOut) * 0.025 * Math.cos(Math.toRadians(path.getHeading(t)));
+				leftX += follower.convertToUnits(lOut) * Math.sin(Math.toRadians(path.getHeading(t)));
+				leftY += follower.convertToUnits(lOut) * Math.cos(Math.toRadians(path.getHeading(t)));
+				rightX += follower.convertToUnits(rOut) * Math.sin(Math.toRadians(path.getHeading(t)));
+				rightY += follower.convertToUnits(rOut) * Math.cos(Math.toRadians(path.getHeading(t)));
 			}
 			mx.add(middleX);
 			my.add(middleY);
@@ -246,8 +246,8 @@ public class PathTest {
 //			ly.add(leftY);
 			r.add(new Position(rightX, rightY, path.getHeading(t)));
 //			ry.add(rightY);
-			middleX += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * 0.025 * Math.sin(Math.toRadians(path.getHeading(t)));
-			middleY += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * 0.025 * Math.cos(Math.toRadians(path.getHeading(t))); 
+			middleX += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
+			middleY += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * Math.cos(Math.toRadians(path.getHeading(t))); 
 			t += 0.025;
 		}
 		viewGraph(time, head);

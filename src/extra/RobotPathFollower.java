@@ -20,13 +20,16 @@ public class RobotPathFollower {
 	public double getDeltaV(double time) {
 		// deg / s * rot / deg * units / rot
 		double omega = path.getOmega(time);
-		return omega / 360.0 * width * Math.PI / 2; // This / 2 seems to actually do the trick...
+		return (Math.toRadians(omega) * width / 2);
+//		return omega / 360.0 * width * Math.PI / 2; // This / 2 seems to actually do the trick...
+//		double vL = (v + omega * WIDTH / 2) / RADIUS_OF_WHEEL;
+//		double vR = (v - omega * WIDTH / 2) / RADIUS_OF_WHEEL;
 	}
 	public double getLeftVelocity(double time) {
-		return path.getMainPath().getSpeed(time) + getDeltaV(time) / 2;
+		return (path.getMainPath().getSpeed(time) + getDeltaV(time)) / (wheelDiameter / 2);
 	}
 	public double getRightVelocity(double time) {
-		return path.getMainPath().getSpeed(time) - getDeltaV(time) / 2;
+		return (path.getMainPath().getSpeed(time) - getDeltaV(time)) / (wheelDiameter / 2);
 	}
 	public double getLeftPosition(double time) {
 		// I don't know how to determine this (this is arclength of the left position)
