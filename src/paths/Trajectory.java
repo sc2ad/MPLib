@@ -34,8 +34,8 @@ public class Trajectory {
 		if (lastTime == -1 || lastTime > t) {
 			lastHeading = heading;
 			lastTime = t;
-			heading = getHeading(t+0.0125); // Magic number used here to depict correct omega at stat point
-			return (heading - lastHeading) / (0.0125);
+			heading = getHeading(t+0.00125); // Magic number used here to depict correct omega at stat point
+			return (heading - lastHeading) / (0.00125);
 		}
 		if (t == lastTime) {
 			return omega;

@@ -28,6 +28,9 @@ public class RobotPath {
 	public MotionPath getMainPath() {
 		return centralPath;
 	}
+	public double getSpeed(double time) {
+		return centralPath.getSpeed(time);
+	}
 	public void constructMainPath(double vMax, double aMax, double omegaMax) {
 		double vReal = vMax > omegaMax / getMaxCurvature() ? omegaMax / getMaxCurvature() : vMax; // Properly sets velocity due to path constraints (this limits entire path)
 		centralPath = new CombinedPath.LongitudalTrapezoid(0, traj.getArclength(), vReal, aMax);

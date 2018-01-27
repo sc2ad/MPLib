@@ -192,6 +192,10 @@ public class PathTest {
 		List<Double> middleP = new ArrayList<Double>();
 		List<Double> mx = new ArrayList<Double>();
 		List<Double> my = new ArrayList<Double>();
+		List<Double> px = new ArrayList<Double>();
+		List<Double> py = new ArrayList<Double>();
+		List<Double> ex = new ArrayList<Double>();
+		List<Double> ey = new ArrayList<Double>();
 		List<Position> l = new ArrayList<Position>();
 //		List<Double> ly = new ArrayList<Double>();
 		List<Position> r = new ArrayList<Position>();
@@ -203,6 +207,7 @@ public class PathTest {
 		follower.setPath(path);
 		follower.start();
 		double t = 0;
+		double dt = 0.01;
 		boolean setup = false;
 		while (t <= path.getMainPath().getTotalTime()) {
 			time.add(t);
@@ -214,17 +219,19 @@ public class PathTest {
 			leftA.add(pafs[0].getAccel(t));
 			rightA.add(pafs[1].getAccel(t));
 			omeg.add(path.getOmega(t));
-			double lOut = follower.getLeftOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
-			double rOut = follower.getRightOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
+//			double lOut = follower.getLeftOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
+//			double rOut = follower.getRightOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
+			double lOut = follower.getLeftVelocity(t);
+			double rOut = follower.getRightVelocity(t);
 			System.out.println(lOut+", "+rOut+", "+follower.getDeltaV(t));
 			leftF.add(lOut);
 			rightF.add(rOut);
 			leftP.add(leftI);
 			rightP.add(rightI);
 			middleP.add(middleI);
-			leftI += lOut * 0.025;
-			rightI += rOut * 0.025;
-			middleI += (lOut + rOut) / 2 * 0.025;
+			leftI += lOut * dt;
+			rightI += rOut * dt;
+			middleI += (lOut + rOut) / 2 * dt;
 			// Convert the following back into units instead of ticks
 			if (!setup) {
 				setup = true;
@@ -246,20 +253,30 @@ public class PathTest {
 //			ly.add(leftY);
 			r.add(new Position(rightX, rightY, path.getHeading(t)));
 //			ry.add(rightY);
-			middleX += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * Math.sin(Math.toRadians(path.getHeading(t)));
-			middleY += (follower.convertToUnits(lOut) + follower.convertToUnits(rOut)) / 2 * Math.cos(Math.toRadians(path.getHeading(t))); 
-			t += 0.025;
+			middleX += dt * path.getSpeed(t) * Math.sin(Math.toRadians(path.getHeading(t)));
+			middleY += dt * path.getSpeed(t) * Math.cos(Math.toRadians(path.getHeading(t)));
+			double posX = traj.getX(t);
+			double posY = traj.getY(t);
+			px.add(posX);
+			py.add(posY);
+			ex.add(middleX - posX);
+			ey.add(middleY - posY);
+			t += dt;
+			
 		}
 		viewGraph(time, head);
 		viewGraph(time, omeg);
-		viewGraph(time, left, leftV, leftA);
-		viewGraph(time, right, rightV, rightA);
-		viewGraph(time, leftF);
-		viewGraph(time, rightF);
-		viewGraph(time, leftP);
-		viewGraph(time, rightP);
-		viewGraph(time, middleP);
-		viewGraph(mx, my, frcPath);
+//		viewGraph(time, left, leftV, leftA);
+//		viewGraph(time, right, rightV, rightA);
+//		viewGraph(time, leftF);
+//		viewGraph(time, rightF);
+//		viewGraph(time, leftP);
+//		viewGraph(time, rightP);
+//		viewGraph(time, middleP);
+//		viewGraph(mx, my, frcPath);
+		viewGraph(mx, my, px, py, false);
+		viewGraph(time, ex);
+		viewGraph(time, ey);
 		Position[] tempL = new Position[l.size()];
 		Position[] tempR = new Position[r.size()];
 		for (int i = 0; i < tempL.length; i++) {
@@ -323,6 +340,20 @@ public class PathTest {
 		Plot2DPanel plot = new Plot2DPanel();
 		plot.addLinePlot("real space", xReal, yReal);
 		JFrame frame = new JFrame("x-y panel");
+		frame.setContentPane(plot);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+	}
+	public static void viewGraph(List<Double> guessX, List<Double> guessY, List<Double> x, List<Double> y, boolean s) {
+		double[] gx = Util.getDoubleArr(guessX);
+		double[] gy = Util.getDoubleArr(guessY);
+		double[] rx = Util.getDoubleArr(x);
+		double[] ry = Util.getDoubleArr(y);
+		
+		Plot2DPanel plot = new Plot2DPanel();
+		plot.addLinePlot("integrated", gx, gy);
+		plot.addLinePlot("real x-y", rx, ry);
+		JFrame frame = new JFrame("integrals vs errors");
 		frame.setContentPane(plot);
 		frame.setSize(800, 600);
 		frame.setVisible(true);
