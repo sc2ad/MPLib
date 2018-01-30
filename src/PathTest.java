@@ -273,7 +273,7 @@ public class PathTest {
 //		viewGraph(time, leftP);
 //		viewGraph(time, rightP);
 //		viewGraph(time, middleP);
-//		viewGraph(mx, my, frcPath);
+		viewGraph(mx, my, frcPath);
 		viewGraph(mx, my, px, py, false);
 		viewGraph(time, ex);
 		viewGraph(time, ey);
