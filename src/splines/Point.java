@@ -1,4 +1,4 @@
-package paths;
+package splines;
 
 public class Point {
 	public double x,y,vx,vy,ax,ay = 0;

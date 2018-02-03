@@ -11,12 +11,13 @@ import paths.Hold;
 import paths.IntegralPath;
 import paths.LinearDerivativePath;
 import paths.MotionPath;
-import paths.Point;
-import paths.Position;
-import paths.RobotPath;
-import paths.Spline;
-import paths.Trajectory;
-import paths.Util;
+import splines.Point;
+import splines.Position;
+import splines.RobotPath;
+import splines.Samples;
+import splines.Spline;
+import splines.Trajectory;
+import util.Util;
 
 /**
  * Overarching class to run various paths.
@@ -132,7 +133,7 @@ public class PathTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Trajectory traj = new Trajectory(xyspl);
+		Trajectory traj = new Trajectory(Samples.LOW, xyspl);
 		List<Double> heading = new ArrayList<Double>();
 		List<Double> curvature = new ArrayList<Double>();
 		Position[][] poses = traj.getLeftRightPositions(22);
@@ -173,8 +174,9 @@ public class PathTest {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature));
-		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
+		double DT = 0.02;
+		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature), DT);
+//		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
 		double v = 10, a = 10, omega = 50;
 		List<Double> time = new ArrayList<Double>();
 		List<Double> head = new ArrayList<Double>();
@@ -185,8 +187,8 @@ public class PathTest {
 		List<Double> rightV = new ArrayList<Double>();
 		List<Double> leftA = new ArrayList<Double>();
 		List<Double> rightA = new ArrayList<Double>();
-		List<Double> leftF = new ArrayList<Double>();
-		List<Double> rightF = new ArrayList<Double>();
+//		List<Double> leftF = new ArrayList<Double>();
+//		List<Double> rightF = new ArrayList<Double>();
 		List<Double> leftP = new ArrayList<Double>();
 		List<Double> rightP = new ArrayList<Double>();
 		List<Double> middleP = new ArrayList<Double>();

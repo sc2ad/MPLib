@@ -1,4 +1,4 @@
-package paths;
+package splines;
 
 public interface PotentialSpline {
 	public double get(double t);

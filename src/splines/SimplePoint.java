@@ -1,4 +1,4 @@
-package paths;
+package splines;
 
 public class SimplePoint {
 	public double pos,vel,accel;

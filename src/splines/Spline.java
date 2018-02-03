@@ -1,4 +1,4 @@
-package paths;
+package splines;
 import java.util.ArrayList;
 import java.util.List;
 

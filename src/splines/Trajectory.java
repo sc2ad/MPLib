@@ -1,7 +1,9 @@
-package paths;
+package splines;
+
+import util.Util;
 
 public class Trajectory {
-	private static final int ARCLENGTH_SAMPLES = 10000;
+	int ARCLENGTH_SAMPLES = 10000;
 	private Spline[] xySplines;
 	private double arclength;
 	private double leftArclength = 0;
@@ -10,10 +12,11 @@ public class Trajectory {
 	private double lastTime = -1;
 	public double seconds = 0;
 	private double omega;
-	public Trajectory(Spline... xySplines) {
+	public Trajectory(Samples s, Spline... xySplines) {
 		if (xySplines.length != 2) {
 			throw new IllegalArgumentException("Must have 2 splines!");
 		}
+		ARCLENGTH_SAMPLES = s.value;
 		this.xySplines = xySplines;
 		seconds = xySplines[0].seconds;
 	}
@@ -26,7 +29,7 @@ public class Trajectory {
 		double dydt = xySplines[1].getDerivative(time);
 		double dxdt = xySplines[0].getDerivative(time);
 //		double dydx = dydt / dxdt;
-		return 90 - Math.toDegrees(Math.atan2(dydt, dxdt)); // Could be faster
+		return Math.atan2(dydt, dxdt); // Could be faster
 	}
 	public double getOmega(double t) {
 		// THIS IS IN SPLINE SECONDS PLEASE PLEASE PLEASRE PLEASE OAJFP LEOJFAHKGH LKHJF CONVERT TO NORMAL UNITS OF MEASUREMENT LIKE SECONDS
@@ -46,43 +49,6 @@ public class Trajectory {
 		lastTime = t;
 		// Degrees per second
 		return omega;
-	}
-	@Deprecated
-	public double getDeprecatedOmega(double t) {
-		// At this link: https://www.wolframalpha.com/input/?i=d%2Fdt+arctan(((1+-+4*t+%2B+3*t*t)*v10+%2B+t*(-2+%2B+3*t)*v11+%2B+6*(-1+%2B+t)*t*(y0+-+y1))%2F((1+-+4*t+%2B+3*t*t)*v00+%2B+t*(-2+%2B+3*t)*v01+%2B+6*(-1+%2B+t)*t*(x0+-+x1)))
-		// Please don't let this be wrong! I will be so sad!
-		int index = (int)t;
-		if (Util.fuzzyEquals(t, index)) {
-			return 0;
-		}
-		// Index is the index for the spline (for xySplines[0].splines and xySplines[1].splines)
-		double v00 = xySplines[0].getSpline(index).v0;
-		double v01 = xySplines[0].getSpline(index).v1;
-		double v10 = xySplines[1].getSpline(index).v0;
-		double v11 = xySplines[1].getSpline(index).v1;
-		double x0 = xySplines[0].getSpline(index).x0;
-		double x1 = xySplines[0].getSpline(index).x1;
-		double y0 = xySplines[1].getSpline(index).x0;
-		double y1 = xySplines[1].getSpline(index).x1;
-//		double part1 = (6*(t-1)*v00*(y0-y1)) / (3*t*t-4*t+1);
-//		double part2 = (6*t*v00*(y0-y1)) / (3*t*t-4*t+1);
-//		double part3 = (6*(t-1)*t*(6*t-4)*v00*(y0-y1)) / Math.pow(3*t*t-4*t+1,2);
-//		double part4 = 3*t*v01 + (3*t-2)*v01 + (6*t-4)*v10 + 3*t*v11;
-//		double part5 = (3*t-2)*v11 + 6*(t-1)*(x0-x1) + 6*t*(x0-x1);
-//		double part6 = (6*(t-1)*t*v00*(y0-y1)) / (3*t*t-4*t+1);
-//		double part7 = (3*t*t-4*t+1)*v10 + t*(3*t-2)*v01;
-//		double part8 = t*(3*t-2)*v11+6*(t-1)*t*(x0-x1);
-		
-		double part1 = (-2*(3*t*t-3*t+1)*v00*v11);
-		double part2 = 2*(3*t*t-3*t+1)*v01*v10;
-		double part3 = 6*t*t*v01*(y0-y1);
-		double part4 = 6*(x0-x1)*(Math.pow(t-1, 2)*v10-t*t*v11);
-		double part5 = 6*Math.pow(t-1, 2)*v00*(y0-y1);
-		double part6 = (3*t*t-3*t+1)*v00 + t*(3*t-2)*v01 + 6*(t-1)*t*(x0-x1);
-		double part7 = (3*t*t-3*t+1)*v10 + t*(3*t-2)*v11 + 6*(t-1)*t*(y0-y1);
-		double part8 = (3*t*t-3*t+1)*v00 + t*(3*t-2)*v01 + 6*(t-1)*t*(x0-x1);
-
-		return (part1 + part2 + part3 + part4 - part5) / (Math.pow(part6, 2) * Math.pow(part7, 2) / Math.pow(part8, 2) + 1);
 	}
 	public double getY(double time) {
 		return xySplines[1].get(time);

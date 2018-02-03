@@ -1,6 +1,6 @@
 package extra;
 
-import paths.RobotPath;
+import splines.RobotPath;
 
 public class RobotPathFollower {
 	private double width,wheelDiameter,ticksPerRevolution;
