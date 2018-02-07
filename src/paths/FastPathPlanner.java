@@ -1,3 +1,5 @@
+package paths;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -587,14 +589,24 @@ public class FastPathPlanner
 
 	public void setPathBeta(double beta)
 	{
-		pathAlpha = beta;
+		pathBeta = beta;
 	}
 
 	public void setPathTolerance(double tolerance)
 	{
-		pathAlpha = tolerance;
+		pathTolerance = tolerance;
 	}
-
+	
+	public void setVelocityAlpha(double vAlpha)
+	{
+		velocityAlpha = vAlpha;
+	}
+	
+	public void setVelocityBeta(double vBeta)
+	{
+		velocityBeta = vBeta;
+	}
+	
 	/**
 	 * This code will calculate a smooth path based on the program parameters. If the user doesn't set any parameters, the will use the defaults optimized for most cases. The results will be saved into the corresponding
 	 * class members. The user can then access .smoothPath, .leftPath, .rightPath, .smoothCenterVelocity, .smoothRightVelocity, .smoothLeftVelocity as needed.
@@ -666,3 +678,4 @@ public class FastPathPlanner
 		smoothLeftVelocity = velocityFix(smoothLeftVelocity, origLeftVelocity, 0.0000001);
 		smoothRightVelocity = velocityFix(smoothRightVelocity, origRightVelocity, 0.0000001);
 	}
+}
