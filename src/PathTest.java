@@ -137,15 +137,16 @@ public class PathTest {
 		List<Double> heading = new ArrayList<Double>();
 		List<Double> curvature = new ArrayList<Double>();
 		Position[][] poses = traj.getLeftRightPositions(22);
+		List<Double> time = new ArrayList<Double>();
+		List<Double> x = new ArrayList<Double>();
+		List<Double> y = new ArrayList<Double>();
+		List<Double> derivX = new ArrayList<Double>();
+		List<Double> derivY = new ArrayList<Double>();
+		List<Double> omegas = new ArrayList<Double>();
+		Position[] left = poses[0];
+		Position[] right = poses[1];
 		try {
-			List<Double> time = new ArrayList<Double>();
-			List<Double> x = new ArrayList<Double>();
-			List<Double> y = new ArrayList<Double>();
-			List<Double> derivX = new ArrayList<Double>();
-			List<Double> derivY = new ArrayList<Double>();
-			List<Double> omegas = new ArrayList<Double>();
-			Position[] left = poses[0];
-			Position[] right = poses[1];
+			
 			double t = 0;
 			while (t <= xyspl[0].seconds) {
 				double xx = traj.getX(t);
@@ -178,96 +179,87 @@ public class PathTest {
 		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature), DT);
 //		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
 		double v = 10, a = 10, omega = 50;
-		List<Double> time = new ArrayList<Double>();
+		double width = 22, wheelRadius = 4;
+		path.configWidth(width);
+		path.configWheelRadius(wheelRadius);
+		path.constructMainPath(v, a, omega);
+		path.resetAccumulation();
+		
+		time = new ArrayList<Double>();
 		List<Double> head = new ArrayList<Double>();
 		List<Double> omeg = new ArrayList<Double>();
-		List<Double> left = new ArrayList<Double>();
-		List<Double> right = new ArrayList<Double>();
-		List<Double> leftV = new ArrayList<Double>();
-		List<Double> rightV = new ArrayList<Double>();
-		List<Double> leftA = new ArrayList<Double>();
-		List<Double> rightA = new ArrayList<Double>();
+//		List<Double> left = new ArrayList<Double>();
+//		List<Double> right = new ArrayList<Double>();
+//		List<Double> leftV = new ArrayList<Double>();
+//		List<Double> rightV = new ArrayList<Double>();
+//		List<Double> leftA = new ArrayList<Double>();
+//		List<Double> rightA = new ArrayList<Double>();
 //		List<Double> leftF = new ArrayList<Double>();
 //		List<Double> rightF = new ArrayList<Double>();
 		List<Double> leftP = new ArrayList<Double>();
 		List<Double> rightP = new ArrayList<Double>();
-		List<Double> middleP = new ArrayList<Double>();
-		List<Double> mx = new ArrayList<Double>();
-		List<Double> my = new ArrayList<Double>();
-		List<Double> px = new ArrayList<Double>();
-		List<Double> py = new ArrayList<Double>();
-		List<Double> ex = new ArrayList<Double>();
-		List<Double> ey = new ArrayList<Double>();
-		List<Position> l = new ArrayList<Position>();
+		List<Position> les = new ArrayList<Position>();
+		List<Position> ris = new ArrayList<Position>();
+		List<Double> lx = new ArrayList<Double>();
+		List<Double> rx = new ArrayList<Double>();
+		List<Double> ly = new ArrayList<Double>();
+		List<Double> ry = new ArrayList<Double>();
+		List<Double> la = new ArrayList<Double>();
+		List<Double> ra = new ArrayList<Double>();
+		List<Double> lw = new ArrayList<Double>();
+		List<Double> rw = new ArrayList<Double>();
+		List<Double> lv = new ArrayList<Double>();
+		List<Double> rv = new ArrayList<Double>();
+		
+//		List<Double> mx = new ArrayList<Double>();
+//		List<Double> my = new ArrayList<Double>();
+//		List<Double> px = new ArrayList<Double>();
+//		List<Double> py = new ArrayList<Double>();
+//		List<Double> ex = new ArrayList<Double>();
+//		List<Double> ey = new ArrayList<Double>();
+//		List<Position> l = new ArrayList<Position>();
 //		List<Double> ly = new ArrayList<Double>();
-		List<Position> r = new ArrayList<Position>();
+//		List<Position> r = new ArrayList<Position>();
 //		List<Double> ry = new ArrayList<Double>();
-		double leftI = 0, rightI = 0, middleI = 0, middleX = frcPath[0].x, middleY = frcPath[0].y, leftX = 0, leftY = 0, rightX = 0, rightY = 0;
-		MotionPath[] pafs = path.getLeftRightPaths(v, a, omega);
-		double width = 22, wheelDiameter = 6, ticksPerRev = 1024;
-		RobotPathFollower follower = new RobotPathFollower(width, wheelDiameter, ticksPerRev, new double[]{0,0,0,1.0/path.getMaxVelocity()}, new double[]{0,0,0,1.0/path.getMaxVelocity()});
-		follower.setPath(path);
-		follower.start();
-		double t = 0;
-		double dt = 0.01;
-		boolean setup = false;
-		while (t <= path.getMainPath().getTotalTime()) {
-			time.add(t);
-			head.add(path.getHeading(t));
-			left.add(pafs[0].getPosition(t));
-			right.add(pafs[1].getPosition(t));
-			leftV.add(pafs[0].getSpeed(t));
-			rightV.add(pafs[1].getSpeed(t));
-			leftA.add(pafs[0].getAccel(t));
-			rightA.add(pafs[1].getAccel(t));
-			omeg.add(path.getOmega(t));
-//			double lOut = follower.getLeftOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
-//			double rOut = follower.getRightOut(t, follower.convertToTicks(path.getMainPath().getPosition(t)));
-			double lOut = follower.getLeftVelocity(t);
-			double rOut = follower.getRightVelocity(t);
-			System.out.println(lOut+", "+rOut+", "+follower.getDeltaV(t));
-			leftF.add(lOut);
-			rightF.add(rOut);
-			leftP.add(leftI);
-			rightP.add(rightI);
-			middleP.add(middleI);
-			leftI += lOut * dt;
-			rightI += rOut * dt;
-			middleI += (lOut + rOut) / 2 * dt;
-			// Convert the following back into units instead of ticks
-			if (!setup) {
-				setup = true;
-				// NEED TO FIX THIS ERROR CHECKING SHENANIGANS
-				// setup initial points correctly
-				leftX = traj.getX(t) - width / 2 * traj.getYDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
-				leftY = traj.getY(t) + width / 2 * traj.getXDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
-				rightX = traj.getX(t) + width / 2 * traj.getYDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
-				rightY = traj.getY(t) - width / 2 * traj.getXDerivative(t) / Math.sqrt(Math.pow(traj.getXDerivative(t), 2) + Math.pow(traj.getYDerivative(t), 2));
-			} else {
-				leftX += follower.convertToUnits(lOut) * Math.sin(Math.toRadians(path.getHeading(t)));
-				leftY += follower.convertToUnits(lOut) * Math.cos(Math.toRadians(path.getHeading(t)));
-				rightX += follower.convertToUnits(rOut) * Math.sin(Math.toRadians(path.getHeading(t)));
-				rightY += follower.convertToUnits(rOut) * Math.cos(Math.toRadians(path.getHeading(t)));
-			}
-			mx.add(middleX);
-			my.add(middleY);
-			l.add(new Position(leftX, leftY, path.getHeading(t)));
-//			ly.add(leftY);
-			r.add(new Position(rightX, rightY, path.getHeading(t)));
-//			ry.add(rightY);
-			middleX += dt * path.getSpeed(t) * Math.sin(Math.toRadians(path.getHeading(t)));
-			middleY += dt * path.getSpeed(t) * Math.cos(Math.toRadians(path.getHeading(t)));
-			double posX = traj.getX(t);
-			double posY = traj.getY(t);
-			px.add(posX);
-			py.add(posY);
-			ex.add(middleX - posX);
-			ey.add(middleY - posY);
-			t += dt;
-			
+		
+		
+		for (int i = 0; i < (int)(path.getTotalTime() / DT)+1; i++) {
+			leftP.add(path.getLeftArclength(i));
+			rightP.add(path.getRightArclength(i));
+			lx.add(path.getLX(i));
+			ly.add(path.getLY(i));
+			rx.add(path.getRX(i));
+			ry.add(path.getRY(i));
+			la.add(path.getLeftAlpha(i));
+			ra.add(path.getRightAlpha(i));
+			lw.add(path.getLeftWheelOmega(i));
+			rw.add(path.getRightWheelOmega(i));
+			lv.add(path.getLeftVelocity(i));
+			rv.add(path.getRightVelocity(i));
+			head.add(path.getHeadingT(i));
+			omeg.add(path.getOmega(i));
+			les.add(new Position(path.getLX(i), path.getLY(i), 0));
+			ris.add(new Position(path.getRX(i), path.getRY(i), 0));
+			time.add(i * DT);
 		}
+		
 		viewGraph(time, head);
 		viewGraph(time, omeg);
+		viewGraph(lx, ly);
+		viewGraph(rx, ry);
+		Position[] l = new Position[les.size()];
+		Position[] r = new Position[ris.size()];
+		for (int i = 0; i < les.size(); i++) {
+			l[i] = les.get(i);
+			r[i] = ris.get(i);
+		}
+		viewGraph(x, y, l, r);
+//		viewGraph(time, la);
+//		viewGraph(time, ra);
+//		viewGraph(time, lw);
+//		viewGraph(time, rw);
+//		viewGraph(time, lv);
+//		viewGraph(time, rv);
 //		viewGraph(time, left, leftV, leftA);
 //		viewGraph(time, right, rightV, rightA);
 //		viewGraph(time, leftF);
@@ -275,17 +267,17 @@ public class PathTest {
 //		viewGraph(time, leftP);
 //		viewGraph(time, rightP);
 //		viewGraph(time, middleP);
-		viewGraph(mx, my, frcPath);
-		viewGraph(mx, my, px, py, false);
-		viewGraph(time, ex);
-		viewGraph(time, ey);
-		Position[] tempL = new Position[l.size()];
-		Position[] tempR = new Position[r.size()];
-		for (int i = 0; i < tempL.length; i++) {
-			tempL[i] = l.get(i);
-			tempR[i] = r.get(i);
-		}
-		viewGraph(mx, my, tempL, tempR);
+//		viewGraph(mx, my, frcPath);
+//		viewGraph(mx, my, px, py, false);
+//		viewGraph(time, ex);
+//		viewGraph(time, ey);
+//		Position[] tempL = new Position[l.size()];
+//		Position[] tempR = new Position[r.size()];
+//		for (int i = 0; i < tempL.length; i++) {
+//			tempL[i] = l.get(i);
+//			tempR[i] = r.get(i);
+//		}
+//		viewGraph(mx, my, tempL, tempR);
 	}
 	/**
 	 * Displays various information about the path provided.

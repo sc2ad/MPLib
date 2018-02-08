@@ -125,35 +125,35 @@ public class RobotPath {
 	public double getHeadingT(int tIndex) {
 		return traj.getHeading(traj.seconds * (tIndex * T_STEP) / getTotalTime());
 	}
-	public double getHeading(double arclength) {
-//		1/2at^2 + vt = s
-//		(1/2at^2 - s)/t = v
-//		v^2 = v0^2 + 2ax
-		double maxv = getMainPath().getSpeed(getMainPath().getTotalTime()/2);
-		double maxa = getMainPath().getAccel(0);
-		double t0 = maxv / maxa;
-		double dx = getMainPath().getPosition(t0);
-		double t1 = getMainPath().getTotalTime() - t0;
-		double v = maxv;
-		double time = 0;
-		if (arclength > getMainPath().getTotalDistance() - dx) {
-			time = t1;
-			arclength -= getMainPath().getTotalDistance() - dx;
-		}
-		if (arclength < dx) {
-			v = Math.sqrt(2 * maxa * arclength); // because trapezoids r the best
-			time += v / maxa;
-		} else {
-			if (time == t1) {
-				// This is a BIG problem! You are asking for a time that is out of bounds
-				time = getMainPath().getTotalTime();
-			} else {
-				arclength -= dx;
-				time = t0 + arclength / maxv;
-			}
-		}
-		return getHeadingT(time);
-	}
+//	public double getHeading(double arclength) {
+////		1/2at^2 + vt = s
+////		(1/2at^2 - s)/t = v
+////		v^2 = v0^2 + 2ax
+//		double maxv = getMainPath().getSpeed(getMainPath().getTotalTime()/2);
+//		double maxa = getMainPath().getAccel(0);
+//		double t0 = maxv / maxa;
+//		double dx = getMainPath().getPosition(t0);
+//		double t1 = getMainPath().getTotalTime() - t0;
+//		double v = maxv;
+//		double time = 0;
+//		if (arclength > getMainPath().getTotalDistance() - dx) {
+//			time = t1;
+//			arclength -= getMainPath().getTotalDistance() - dx;
+//		}
+//		if (arclength < dx) {
+//			v = Math.sqrt(2 * maxa * arclength); // because trapezoids r the best
+//			time += v / maxa;
+//		} else {
+//			if (time == t1) {
+//				// This is a BIG problem! You are asking for a time that is out of bounds
+//				time = getMainPath().getTotalTime();
+//			} else {
+//				arclength -= dx;
+//				time = t0 + arclength / maxv;
+//			}
+//		}
+//		return getHeadingT(time);
+//	}
 	public double getOmega(double time) {
 		// Also converts to degrees / second
 		return traj.getOmega(traj.seconds * time / getMainPath().getTotalTime()) * (traj.seconds / getMainPath().getTotalTime());
@@ -165,7 +165,7 @@ public class RobotPath {
 		// Width must be the same unit as everything else
 		this.width = width;
 	}
-	public void configWheelradius(double radius) {
+	public void configWheelRadius(double radius) {
 		// Radius must be the same unit as everything else
 		wheelRadius = radius;
 	}
@@ -190,10 +190,10 @@ public class RobotPath {
 	public void resetAccumulation() {
 		leftTotal = 0;
 		rightTotal = 0;
-		lx = 0;
-		ly = 0;
-		rx = 0;
-		ry = 0;
+		lx = traj.getX(0) - width / 2 * traj.getYDerivative(0) / (Math.sqrt(Math.pow(traj.getXDerivative(0), 2) + Math.pow(traj.getYDerivative(0), 2)));
+		ly = traj.getY(0) + width / 2 * traj.getXDerivative(0) / (Math.sqrt(Math.pow(traj.getXDerivative(0), 2) + Math.pow(traj.getYDerivative(0), 2)));
+		rx = traj.getX(0) + width / 2 * traj.getYDerivative(0) / (Math.sqrt(Math.pow(traj.getXDerivative(0), 2) + Math.pow(traj.getYDerivative(0), 2)));
+		ry = traj.getY(0) - width / 2 * traj.getXDerivative(0) / (Math.sqrt(Math.pow(traj.getXDerivative(0), 2) + Math.pow(traj.getYDerivative(0), 2)));
 	}
 	public double getLeftArclength(int tIndex) {
 		leftTotal += getLeftWheelOmega(tIndex) * T_STEP;
