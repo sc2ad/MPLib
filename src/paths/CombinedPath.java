@@ -142,7 +142,8 @@ public class CombinedPath implements MotionPath {
 	public double getSpeed(double time) {
 		double dt = getDeltaTime(time);
 		if (time > getTotalTime()) {
-			return getCurve(time).getSpeed(dt + dt < getCurve(time).getTotalTime() ? getCurve(time).getTotalTime() : 0);
+			MotionPath p = getCurve(time);
+			return p.getSpeed(p.getTotalTime());
 		}
 		return getCurve(time).getSpeed(dt);
 	}
