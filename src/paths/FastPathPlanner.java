@@ -84,10 +84,28 @@ public class FastPathPlanner
 		The units of these coordinates are position units assumed by the user (i.e inch, foot, meters) 
 	 * @param path
 	 */
-	public FalconPathPlanner(double[][] path)
+	public FastPathPlanner(double[][] path)
 	{
 		this.origPath = doubleArrayCopy(path);
 
+		//default values DO NOT MODIFY;
+		pathAlpha = 0.7;
+		pathBeta = 0.3;
+		pathTolerance = 0.0000001;
+
+		velocityAlpha = 0.1;
+		velocityBeta = 0.3;
+		velocityTolerance = 0.0000001;
+	}
+	
+	public FastPathPlanner(Point[] path) {
+		double[][] temp = new double[path.length][2];
+		for (int i = 0; i < temp.length; i++) {
+			temp[i][0] = path[i].x;
+			temp[i][1] = path[i].y;
+		}
+		this.origPath = temp;
+		
 		//default values DO NOT MODIFY;
 		pathAlpha = 0.7;
 		pathBeta = 0.3;
@@ -125,7 +143,7 @@ public class FastPathPlanner
 	 * 
 	 * BigO: Order N x M
 	 * @param arr
-	 * @return
+	 * @return the copied array
 	 */
 	public static double[][] doubleArrayCopy(double[][] arr)
 	{
@@ -154,7 +172,7 @@ public class FastPathPlanner
 	 * 
 	 * @param orig
 	 * @param numToInject
-	 * @return
+	 * @return the injected array
 	 */
 	public double[][] inject(double[][] orig, int numToInject)
 	{
@@ -205,7 +223,7 @@ public class FastPathPlanner
 	 * @param weight_data
 	 * @param weight_smooth
 	 * @param tolerance
-	 * @return
+	 * @return the smoothed data
 	 */
 	public double[][] smoother(double[][] path, double weight_data, double weight_smooth, double tolerance)
 	{
@@ -236,7 +254,7 @@ public class FastPathPlanner
 	 * 
 	 * BigO: Order N + Order M, Where N is length of original Path, and M is length of Nodes found in Path
 	 * @param path
-	 * @return
+	 * @return the node only path
 	 */
 	public static double[][] nodeOnlyWayPoints(double[][] path)
 	{
@@ -281,7 +299,7 @@ public class FastPathPlanner
 	 * BigO: order N
 	 * @param smoothPath
 	 * @param timeStep
-	 * @return
+	 * @return the velocity array
 	 */
 	double[][] velocity(double[][] smoothPath, double timeStep)
 	{
@@ -324,7 +342,7 @@ public class FastPathPlanner
 	 * @param smoothVelocity
 	 * @param origVelocity
 	 * @param tolerance
-	 * @return
+	 * @return the fixed velocity array
 	 */
 	double[][] velocityFix(double[][] smoothVelocity, double[][] origVelocity, double tolerance)
 	{
@@ -379,7 +397,7 @@ public class FastPathPlanner
 	 * BigO: Order N
 	 * @param origVelocity
 	 * @param smoothVelocity
-	 * @return
+	 * @return the sume of errors array
 	 */
 	private double[] errorSum(double[][] origVelocity, double[][] smoothVelocity)
 	{

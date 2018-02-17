@@ -1,3 +1,5 @@
+package extra;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -39,7 +41,7 @@ import javax.swing.*;
  *
  */
  
-class FalconLinePlot extends JPanel implements ClipboardOwner{
+public class GoodGraphing extends JPanel implements ClipboardOwner{
   
     
 	private static final long serialVersionUID = 3205256608145459434L;
@@ -81,12 +83,12 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
      * Constructor which Plots only Y-axis data.
      * @param yData is a array of doubles representing the Y-axis values of the data to be plotted.
      */
-    public FalconLinePlot(double[] yData)
+    public GoodGraphing(double[] yData)
     {
     	this(null,yData,Color.red);
     }
     
-    public FalconLinePlot(double[] yData,Color lineColor, Color marker)
+    public GoodGraphing(double[] yData,Color lineColor, Color marker)
     {
     	this(null,yData,lineColor,marker);
     }
@@ -96,7 +98,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
      * @param xData is an array of doubles representing the X-axis values of the data to be plotted.
      * @param yData is an array of double representing the Y-axis values of the data to be plotted.
      */
-    public FalconLinePlot(double[] xData, double[] yData)
+    public GoodGraphing(double[] xData, double[] yData)
     {
     	this(xData,yData,Color.red,null);
     }
@@ -106,7 +108,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
      * @param data is a 2D array of doubles of size Nx2 or 2xN. The plot assumes X is the first dimension, and y data
      * is the second dimension.
      */
-    public FalconLinePlot(double[][] data)
+    public GoodGraphing(double[][] data)
     {
     	this(getXVector(data),getYVector(data),Color.red,null);
     }
@@ -119,7 +121,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
  * @param markerColor is the color the user which to be used for the data point. Make this null if the user wishes to
  * not have datapoint markers.
  */
-    public FalconLinePlot(double[][] data, Color lineColor, Color markerColor)
+    public GoodGraphing(double[][] data, Color lineColor, Color markerColor)
     {
     	this(getXVector(data),getYVector(data),lineColor,markerColor);
     }
@@ -131,7 +133,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
      * @param yData is an array of double representing the Y-axis values of the data to be plotted.
      * @param lineColor is the color the user wishes to be displayed for the line connecting each datapoint
      */
-    public FalconLinePlot(double[] xData, double[] yData,Color lineColor)
+    public GoodGraphing(double[] xData, double[] yData,Color lineColor)
     {
     	this(xData,yData,lineColor,null);
     }
@@ -147,7 +149,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
      * @param markerColor is the color the user which to be used for the data point. Make this null if the user wishes to
      * not have datapoint markers.
      */
-    public FalconLinePlot(double[] xData, double[] yData,Color lineColor, Color markerColor)
+    public GoodGraphing(double[] xData, double[] yData,Color lineColor, Color markerColor)
     {
     	xLabel = "X axis";
     	yLabel = "Y axis";
@@ -179,8 +181,8 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
     
     /**
      * Adds a plot to an existing figure.  
-     * @param yData is a array of doubles representing the Y-axis values of the data to be plotted.
-     * @param color is the color the user wishes to be displayed for the line connecting each datapoint
+     * @param y is a array of doubles representing the Y-axis values of the data to be plotted.
+     * @param lineColor is the color the user wishes to be displayed for the line connecting each datapoint
      */
     
     public void addData(double[] y, Color lineColor)
@@ -289,7 +291,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
         
     }
     
-    void setXTic(double lowerBound, double upperBound, double stepSize)
+    public void setXTic(double lowerBound, double upperBound, double stepSize)
     {
     	this.userSetXTic = true;
     	
@@ -735,7 +737,7 @@ class FalconLinePlot extends JPanel implements ClipboardOwner{
 
     
     
-    private void menu(JFrame g, final FalconLinePlot p )
+    private void menu(JFrame g, final GoodGraphing p )
     {
 
     	g.addMouseListener(new PopupTriggerListener());
