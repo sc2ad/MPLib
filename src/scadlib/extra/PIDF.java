@@ -1,4 +1,4 @@
-package extra;
+package scadlib.extra;
 
 public class PIDF {
 	private double p,i,d,f;

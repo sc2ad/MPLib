@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 
 public interface PotentialSpline {
 	public double get(double t);

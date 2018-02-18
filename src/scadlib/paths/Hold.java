@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 /**
  * A class for simple flat lines.
  * An easier to use alternative over {@link LinearDerivativePath} as it does not need velocity.

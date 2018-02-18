@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 
 public class RobotPath {
 	Trajectory traj;

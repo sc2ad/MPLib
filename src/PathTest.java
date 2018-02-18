@@ -6,12 +6,12 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
-import extra.GoodGraphing;
-import paths.FastPathPlanner;
-import paths.MotionPath;
-import paths.Point;
-import paths.Position;
-import paths.Util;
+import scadlib.extra.GoodGraphing;
+import scadlib.paths.FastPathPlanner;
+import scadlib.paths.MotionPath;
+import scadlib.paths.Point;
+import scadlib.paths.Position;
+import scadlib.paths.Util;
 
 /**
  * Overarching class to run various paths.
@@ -48,18 +48,19 @@ public class PathTest {
 		figure.yGridOn();
 		figure.setYLabel("Y (inches)");
 		figure.setXLabel("X (inches)");
-		double width = 648, height = 324.5;
-		double robotWidth = 22;
-		double robotLength = 32;
-		figure.setXTic(0, width, 12);
-		figure.setYTic(0, height, 12);
-		// Add the close switch
-		// 38.719 is length of switch
+		double width = 648;
+		double height = 324.5;
+		double robotWidth = 25.75;
+		double robotLength = 37.25;
 		double switchLength = 38.719;
 		double distanceToSwitchFromWall = 85.25;
 		double distanceToSwitchFromAlliance = 140;
 		double delta = 10;
 		double widthOfSwitch = 56;
+		figure.setXTic(0, width, 12);
+		figure.setYTic(0, height, 12);
+		// Add the close switch
+		// 38.719 is length of switch
 		figure.addData(new double[][]{
 			{distanceToSwitchFromAlliance, distanceToSwitchFromWall},
 			{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
@@ -110,6 +111,8 @@ public class PathTest {
 		figure.addData(fpp.leftPath, Color.red);
 		figure.addData(fpp.rightPath, Color.green);
 		
+		
+		
 		GoodGraphing fig = new GoodGraphing(fpp.smoothCenterVelocity, null, Color.blue);
 		fig.yGridOn();
 		fig.xGridOn();
@@ -118,6 +121,14 @@ public class PathTest {
 		fig.setTitle("Velocity profile\nLeft = Red, Right = Green");
 		fig.addData(fpp.smoothLeftVelocity, Color.red);
 		fig.addData(fpp.smoothRightVelocity, Color.green);
+		
+		double[][] leftV = fpp.smoothLeftVelocity;
+		double[][] rightV = fpp.smoothRightVelocity;
+		
+		for (int i = 0; i < leftV.length; i++) {
+			System.out.print(leftV[i][0]);
+			System.out.println(", "+leftV[i][1]);
+		}
 		
 		GoodGraphing pos = new GoodGraphing(fpp.nodeOnlyPath, Color.blue, Color.green);
 		pos.yGridOn();

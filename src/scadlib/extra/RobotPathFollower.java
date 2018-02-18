@@ -1,6 +1,6 @@
-package extra;
+package scadlib.extra;
 
-import paths.RobotPath;
+import scadlib.paths.RobotPath;
 
 public class RobotPathFollower {
 	private double width,wheelDiameter,ticksPerRevolution;

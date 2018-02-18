@@ -1,4 +1,4 @@
-package extra;
+package scadlib.extra;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;

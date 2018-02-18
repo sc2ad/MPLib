@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 
 public class SimplePoint {
 	public double pos,vel,accel;

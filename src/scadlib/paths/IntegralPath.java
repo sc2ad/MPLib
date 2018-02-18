@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 public class IntegralPath implements MotionPath {
 	private MotionPath speedPath;
 	private double position;

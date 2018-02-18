@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 
 public class Trajectory {
 	private static final int ARCLENGTH_SAMPLES = 10000;

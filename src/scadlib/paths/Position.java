@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 
 public class Position {
 	public double x, y, theta;

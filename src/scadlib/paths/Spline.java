@@ -1,4 +1,4 @@
-package paths;
+package scadlib.paths;
 import java.util.ArrayList;
 import java.util.List;
 
