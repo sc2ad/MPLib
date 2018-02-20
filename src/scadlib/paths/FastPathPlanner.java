@@ -625,6 +625,37 @@ public class FastPathPlanner
 		velocityBeta = vBeta;
 	}
 	
+	private double[] leftArclength;
+	private double[] rightArclength;
+	private double leftArclengthSum;
+	private double rightArclengthSum;
+	
+	public double[] getLeftArclength() {
+		if (leftArclength != null) {
+			return leftArclength;
+		}
+		leftArclength = new double[leftPath.length];
+		leftArclength[0] = 0;
+		for (int i = 1; i < leftPath.length; i++) {
+			leftArclengthSum += Math.sqrt(Math.pow(leftPath[i][1] - leftPath[i-1][1], 2) + Math.pow(leftPath[i][0] - leftPath[i-1][0], 2));
+			leftArclength[i] = leftArclengthSum;
+		}
+		return leftArclength;
+	}
+	
+	public double[] getRightArclength() {
+		if (rightArclength != null) {
+			return rightArclength;
+		}
+		rightArclength = new double[rightPath.length];
+		rightArclength[0] = 0;
+		for (int i = 1; i < rightPath.length; i++) {
+			rightArclengthSum += Math.sqrt(Math.pow(rightPath[i][1] - rightPath[i-1][1], 2) + Math.pow(rightPath[i][0] - rightPath[i-1][0], 2));
+			rightArclength[i] = rightArclengthSum;
+		}
+		return rightArclength;
+	}
+	
 	/**
 	 * This code will calculate a smooth path based on the program parameters. If the user doesn't set any parameters, the will use the defaults optimized for most cases. The results will be saved into the corresponding
 	 * class members. The user can then access .smoothPath, .leftPath, .rightPath, .smoothCenterVelocity, .smoothRightVelocity, .smoothLeftVelocity as needed.
