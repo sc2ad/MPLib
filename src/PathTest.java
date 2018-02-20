@@ -75,43 +75,42 @@ public class PathTest {
 			{distanceToSwitchFromAlliance, distanceToSwitchFromWall}
 		}, Color.black);
 		
+		double xDelta = 10;
+		double yDelta = 0;
+		
 		double[][] leftPath = new double[][]{
 			{robotLength/2, height / 2},
-			{(distanceToSwitchFromAlliance-robotLength)/2-delta, height/2},
-			{(distanceToSwitchFromAlliance-robotLength)/2+delta, height/2+delta},
-			{(distanceToSwitchFromAlliance+robotLength)/2+delta, height-distanceToSwitchFromWall-switchLength/2},
-			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2}
+			{(distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2},
+			{(distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta, height/2+delta},
+			{(distanceToSwitchFromAlliance+robotLength)/2+delta-xDelta, height-distanceToSwitchFromWall-switchLength/2+yDelta},
+			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta}
 		};
 		
-//		double[][] rightPath = new double[][]{
-//			{robotLength/2, height/2},
-//			{robotLength/2+delta, height/2},
-//			{(distanceToSwitchFromAlliance-robotLength)/2+delta, height/2-2*delta},
-//			{(distanceToSwitchFromAlliance+robotLength)/2-delta, distanceToSwitchFromWall+switchLength/2+delta},
-//			{(distanceToSwitchFromAlliance+robotLength)/2+delta, distanceToSwitchFromWall+switchLength/2},
-//			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2}
-//		};
 		double[][] rightPath = new double[][]{
-			{11, 162.5},
-			{30, 162.5},
-			{47, 159},
-			{57, 145},
-			{70, 128},
-			{82.4, 111},
-			{105, 105},
-			{125.4, 105}
+			{robotLength/2, height/2},
+			{(distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2},
+			{(distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta, height/2-delta},
+			{(distanceToSwitchFromAlliance+robotLength)/2+delta-xDelta, distanceToSwitchFromWall+switchLength/2-yDelta},
+			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta}
 		};
+//		double[][] rightPath = new double[][]{
+//			{11, 162.5},
+//			{30, 162.5},
+//			{47, 159},
+//			{57, 145},
+//			{70, 128},
+//			{82.4, 111},
+//			{105, 105},
+//			{125.4, 105}
+//		};
 		
 		FastPathPlanner fpp = new FastPathPlanner(leftPath);
-		fpp.calculate(5, 0.02, robotWidth);
+		fpp.calculate(5, 0.04, robotWidth);
 		
 		figure.addData(fpp.nodeOnlyPath, Color.black);
-		
 		figure.addData(fpp.smoothPath, Color.red, Color.blue);
 		figure.addData(fpp.leftPath, Color.red);
 		figure.addData(fpp.rightPath, Color.green);
-		
-		
 		
 		GoodGraphing fig = new GoodGraphing(fpp.smoothCenterVelocity, null, Color.blue);
 		fig.yGridOn();
@@ -150,6 +149,8 @@ public class PathTest {
 		}
 		System.out.println("\t{"+fpp.smoothPath[fpp.smoothPath.length-1][0]+", "+fpp.smoothPath[fpp.smoothPath.length-1][1]+"}");
 		System.out.println("};");
+		System.out.println(fpp.getLeftArclength()[fpp.leftPath.length-1]);
+		System.out.println(fpp.getRightArclength()[fpp.rightPath.length-1]);
 	}
 	/**
 	 * Displays various information about the path provided.
