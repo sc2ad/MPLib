@@ -20,29 +20,94 @@ import scadlib.paths.Util;
  *
  */
 public class PathTest {
+	static double fieldW = 648;
+	static double fieldH = 324.5;
+	private static double[][] makeSwitch(int switchNum) {
+		double height = 324.5;
+		double switchLength = 38.719;
+		double distanceToSwitchFromWall = 85.25;
+		double distanceToSwitchFromAlliance = 140;
+		double widthOfSwitch = 56;
+		if (switchNum <= 0) {
+			return new double[][]{
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+				{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall-switchLength}, // 200.5
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall}
+			};
+		}
+		return new double[][]{
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+			{fieldW-distanceToSwitchFromAlliance, height-distanceToSwitchFromWall-switchLength}, // 200.5
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall}
+		};
+	}
+	private static double[][] makePlatform() {
+		double distanceToEdgeofPlatform = 261.47;
+		double distanceToPlatformFromWall = 95.25;
+		return new double[][]{
+			{distanceToEdgeofPlatform, distanceToPlatformFromWall},
+			{distanceToEdgeofPlatform, fieldH-distanceToPlatformFromWall},
+			{fieldW-distanceToEdgeofPlatform, fieldH-distanceToPlatformFromWall},
+			{fieldW-distanceToEdgeofPlatform, distanceToPlatformFromWall},
+			{distanceToEdgeofPlatform, distanceToPlatformFromWall}
+		};
+	}
+	private static double[][] makeNullzones(int upperOrLower) {
+		double distanceToEdgeX = 288;
+		double distanceToEdgeY = 95.25;
+		if (upperOrLower <= 0) {
+			return new double[][]{
+				{distanceToEdgeX, fieldH},
+				{fieldW-distanceToEdgeX, fieldH},
+				{fieldW-distanceToEdgeX, fieldH-distanceToEdgeY},
+				{distanceToEdgeX, fieldH-distanceToEdgeY},
+				{distanceToEdgeX, fieldH}
+			};
+		}
+		return new double[][]{
+			{distanceToEdgeX, distanceToEdgeY},
+			{fieldW-distanceToEdgeX, distanceToEdgeY},
+			{fieldW-distanceToEdgeX, 0},
+			{distanceToEdgeX, 0},
+			{distanceToEdgeX, distanceToEdgeY}
+		};
+	}
+	private static double[][] makeScale() {
+		double distanceX = 299.65;
+		double distanceY = 71.57;
+		double scalePlatformLength = 38.719;
+		return new double[][]{
+			{distanceX, distanceY},
+			{distanceX, fieldH-distanceY},
+			{fieldW-distanceX, fieldH-distanceY},
+			{fieldW-distanceX, fieldH-distanceY-scalePlatformLength},
+			{distanceX, fieldH-distanceY-scalePlatformLength},
+			{fieldW-distanceX, fieldH-distanceY-scalePlatformLength},
+			{fieldW-distanceX, distanceY+scalePlatformLength},
+			{distanceX, distanceY+scalePlatformLength},
+			{fieldW-distanceX, distanceY+scalePlatformLength},
+			{fieldW-distanceX, distanceY},
+			{distanceX, distanceY}
+		};
+	}
 	@SuppressWarnings("javadoc")
-	public static void main(String[] args) {
-		Point[] frcPath = new Point[]{
-				new Point(-23.6, -6.6, 3.5, 1.2, 3, -8.2),
-				new Point(-8.65, 5.5, 23.4, 12.8, 2.1, 4.72),
-				new Point(28.24, 4.3, -6.9, -3.3, 12.5, 13)
-		};
-		double vMax = 25;
-		Point[] frcPath2 = new Point[]{
-				new Point(0, 0, 0, 10, 0),
-				new Point(0, 50, vMax, 0, 20),
-				new Point(25, 90, vMax, 0, 100),
-				new Point(50, 80, vMax, -10, 140),
-				new Point(60, 50, 0, 0, 150)
-		};
-		Point[] frcPath3 = new Point[]{
-				new Point(0,0,vMax,0,0),
-				new Point(6.25, 12.5, vMax, 0, 90),
-				new Point(12.5, 0, vMax, 0, 180),
-				new Point(6.25, -12.5, vMax, 0, 270),
-				new Point(0,0, vMax, 0, 360)
-		};
-		
+	public static void main(String[] args) {		
 		GoodGraphing figure = new GoodGraphing(new double[][]{{0,0}});
 		figure.xGridOn();
 		figure.yGridOn();
@@ -60,23 +125,23 @@ public class PathTest {
 		figure.setXTic(0, width, 12);
 		figure.setYTic(0, height, 12);
 		// Add the close switch
-		// 38.719 is length of switch
-		figure.addData(new double[][]{
-			{distanceToSwitchFromAlliance, distanceToSwitchFromWall},
-			{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
-			{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall},
-			{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
-			{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall-switchLength}, // 200.5
-			{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
-			{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
-			{distanceToSwitchFromAlliance, distanceToSwitchFromWall+switchLength},
-			{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
-			{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall},
-			{distanceToSwitchFromAlliance, distanceToSwitchFromWall}
-		}, Color.black);
+		
+		figure.addData(makeSwitch(0), Color.black);
+		figure.addData(makeSwitch(1), Color.black);
+		figure.addData(makePlatform(), Color.black);
+		figure.addData(makeNullzones(0), Color.black);
+		figure.addData(makeNullzones(1), Color.black);
+		figure.addData(makeScale(), Color.black);
 		
 		double xDelta = 10;
 		double yDelta = 0;
+		
+		double stage2x1 = 5;
+		double stage2y1 = 2;
+		double stage2x2 = 10;
+		double stage2y2 = 10;
+		double stage2y3 = 15;
+		double stage2y4 = 40;
 		
 		double[][] leftPath = new double[][]{
 			{robotLength/2, height / 2},
@@ -86,6 +151,30 @@ public class PathTest {
 			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta}
 		};
 		
+		double[][] leftTurnBack = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y1},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y2},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
+		};
+		
+		double[][] leftGrabCube = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta-stage2y4}
+		};
+		
+		double[][] leftReverseCube = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta-stage2y4},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3}
+		};
+		
+		double[][] leftTurnToSwitch = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y2},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y1},
+			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta},
+		};
+		
 		double[][] rightPath = new double[][]{
 			{robotLength/2, height/2},
 			{(distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2},
@@ -93,33 +182,51 @@ public class PathTest {
 			{(distanceToSwitchFromAlliance+robotLength)/2+delta-xDelta, distanceToSwitchFromWall+switchLength/2-yDelta},
 			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta}
 		};
-//		double[][] rightPath = new double[][]{
-//			{11, 162.5},
-//			{30, 162.5},
-//			{47, 159},
-//			{57, 145},
-//			{70, 128},
-//			{82.4, 111},
-//			{105, 105},
-//			{125.4, 105}
-//		};
 		
-		FastPathPlanner fpp = new FastPathPlanner(leftPath);
-		fpp.calculate(5, 0.04, robotWidth);
+		double[][] rightTurnBack = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y1},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y2},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
+		};
 		
-		figure.addData(fpp.nodeOnlyPath, Color.black);
-		figure.addData(fpp.smoothPath, Color.red, Color.blue);
-		figure.addData(fpp.leftPath, Color.red);
-		figure.addData(fpp.rightPath, Color.green);
+		double[][] rightGrabCube = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta+stage2y4}
+		};
 		
-		GoodGraphing fig = new GoodGraphing(fpp.smoothCenterVelocity, null, Color.blue);
-		fig.yGridOn();
-		fig.xGridOn();
-		fig.setYLabel("Velocity (in/s)");
-		fig.setXLabel("time (seconds)");
-		fig.setTitle("Velocity profile\nLeft = Red, Right = Green");
-		fig.addData(fpp.smoothLeftVelocity, Color.red);
-		fig.addData(fpp.smoothRightVelocity, Color.green);
+		double[][] rightReverseCube = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta+stage2y4},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
+		};
+		
+		double[][] rightTurnToSwitch = new double[][]{
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y2},
+			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y1},
+			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta},
+		};
+		
+		FastPathPlanner fpp = new FastPathPlanner(rightPath);
+		FastPathPlanner stage2 = new FastPathPlanner(rightTurnBack); // This path should have left and right inverted and negative!
+		FastPathPlanner grabCube = new FastPathPlanner(rightGrabCube);
+		FastPathPlanner goBackFromCube = new FastPathPlanner(rightReverseCube);
+		FastPathPlanner goBack = new FastPathPlanner(rightTurnToSwitch);
+				
+		fpp.calculate(3.2, 0.02, robotWidth);
+		stage2.calculate(2, 0.02, robotWidth);
+		grabCube.calculate(1, 0.02, robotWidth);
+		goBackFromCube.calculate(1, 0.02, robotWidth);
+		goBack.calculate(2, 0.02, robotWidth);
+		
+		reversePath(stage2);
+		reversePath(goBackFromCube);
+		
+		addDataToGraph(fpp, figure);
+		addDataToGraph(stage2, figure);
+		addDataToGraph(grabCube, figure);
+		addDataToGraph(goBackFromCube, figure);
+		addDataToGraph(goBack, figure);
 		
 		double[][] leftV = fpp.smoothLeftVelocity;
 		double[][] rightV = fpp.smoothRightVelocity;
@@ -151,6 +258,33 @@ public class PathTest {
 		System.out.println("};");
 		System.out.println(fpp.getLeftArclength()[fpp.leftPath.length-1]);
 		System.out.println(fpp.getRightArclength()[fpp.rightPath.length-1]);
+	}
+	public static void addDataToGraph(FastPathPlanner plannedPath, GoodGraphing fig) {
+		fig.addData(plannedPath.nodeOnlyPath, Color.black);
+		fig.addData(plannedPath.smoothPath, Color.red, Color.blue);
+		fig.addData(plannedPath.leftPath, Color.red);
+		fig.addData(plannedPath.rightPath, Color.green);
+		
+		GoodGraphing grabCubeFig = new GoodGraphing(plannedPath.smoothCenterVelocity, null, Color.blue);
+		grabCubeFig.yGridOn();
+		grabCubeFig.xGridOn();
+		grabCubeFig.setYLabel("Velocity (in/s)");
+		grabCubeFig.setXLabel("time (seconds)");
+		grabCubeFig.setTitle("Velocity profile\nLeft = Red, Right = Green");
+		grabCubeFig.addData(plannedPath.smoothLeftVelocity, Color.red);
+		grabCubeFig.addData(plannedPath.smoothRightVelocity, Color.green);
+	}
+	
+	public static void reversePath(FastPathPlanner path) {
+		double[][] tmp = path.rightPath;
+		path.rightPath = path.leftPath;
+		path.leftPath = tmp;
+		
+		for (int i=0; i < path.smoothLeftVelocity.length; i++) {
+			path.smoothRightVelocity[i][1] = -path.smoothRightVelocity[i][1];
+			path.smoothLeftVelocity[i][1] = -path.smoothLeftVelocity[i][1];
+			path.smoothCenterVelocity[i][1] = -path.smoothCenterVelocity[i][1];
+		}
 	}
 	/**
 	 * Displays various information about the path provided.
