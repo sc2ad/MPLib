@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,12 +6,13 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
-import extra.RobotPathFollower;
+import extra.GoodGraphing;
 import paths.CombinedPath;
 import paths.Hold;
 import paths.IntegralPath;
 import paths.LinearDerivativePath;
 import paths.MotionPath;
+import splines.PathPlanner;
 import splines.Point;
 import splines.Position;
 import splines.RobotPath;
@@ -96,165 +98,222 @@ public class PathTest {
 				new Point(6.25, -12.5, vMax, 0, 270),
 				new Point(0,0, vMax, 0, 360)
 		};
+		double width = 648;
+		double height = 324.5;
+		double robotWidth = 25.75;
+		double robotLength = 37.25;
+		double switchLength = 38.719;
+		double distanceToSwitchFromWall = 85.25;
+		double distanceToSwitchFromAlliance = 140;
+		double delta = 10;
+		double widthOfSwitch = 56;
+		double xDelta = 10;
+		double yDelta = 0;
 		
-		Spline[] xyspl = Spline.interpolateQuintic(frcPath);
-		try {
-			double t = 0;
-			List<Double> time = new ArrayList<Double>();
-			List<Double> x = new ArrayList<Double>();
-			List<Double> y = new ArrayList<Double>();
-			List<Double> derivX = new ArrayList<Double>();
-			List<Double> derivY = new ArrayList<Double>();
-			List<Double> derivYX = new ArrayList<Double>();
-			while (t <= xyspl[0].seconds) {
-				double xx = xyspl[0].get(t);
-				double yy = xyspl[1].get(t);
-				time.add(t);
-				x.add(xx);
-				y.add(yy);
-				derivX.add(xyspl[0].getDerivative(t));
-				derivY.add(xyspl[1].getDerivative(t));
-				derivYX.add(xyspl[1].getDerivative(t)/xyspl[0].getDerivative(t));
-				System.out.println("xHat: "+xx+"\tyHat: "+yy);
-				t += 0.01;
-			}
-			System.out.println("X:\n"+xyspl[0]);
-			System.out.println("Y:\n"+xyspl[1]);
-			System.out.println(xyspl[0].getArclength());
-			System.out.println(xyspl[1].getArclength());
-			derivYX.remove(0);
-			derivYX.add(derivYX.get(derivYX.size()-1));
-			viewGraph(x,y,frcPath);
-//			viewGraph(time,derivX);
-//			viewGraph(time,derivY);
-//			viewGraph(time,x);
-//			viewGraph(time,y);
-//			viewGraph(time,derivYX);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Trajectory traj = new Trajectory(Samples.LOW, xyspl);
-		List<Double> heading = new ArrayList<Double>();
-		List<Double> curvature = new ArrayList<Double>();
-		Position[][] poses = traj.getLeftRightPositions(22);
-		List<Double> time = new ArrayList<Double>();
-		List<Double> x = new ArrayList<Double>();
-		List<Double> y = new ArrayList<Double>();
-		List<Double> derivX = new ArrayList<Double>();
-		List<Double> derivY = new ArrayList<Double>();
-		List<Double> omegas = new ArrayList<Double>();
-		Position[] left = poses[0];
-		Position[] right = poses[1];
-		try {
-			
-			double t = 0;
-			while (t <= xyspl[0].seconds) {
-				double xx = traj.getX(t);
-				double yy = traj.getY(t);
-				time.add(t);
-				x.add(xx);
-				y.add(yy);
-				derivX.add(xyspl[0].getDerivative(t));
-				derivY.add(xyspl[1].getDerivative(t));
-				heading.add(traj.getHeading(t));
-				curvature.add(traj.getCurvature(t));
-				omegas.add(traj.getOmega(t));
-				System.out.println("xHat: "+xx+"\tyHat: "+yy);
-				t += 0.01;
-			}
-			System.out.println(traj.getLeftArclength());
-			System.out.println(traj.getRightArclength());
-			System.out.println(traj.getArclength());
-			viewGraph(x, y, left, right);
-			viewGraph(time, heading);
-//			viewGraph(time, curvature);
-//			viewGraph(time, derivX);
-//			viewGraph(time, derivY);
-			viewGraph(time, omegas);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		double DT = 0.02;
-		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature), DT);
-//		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
-		double v = 10, a = 10, omega = 50;
-		double width = 22, wheelRadius = 4;
-		path.configWidth(width);
-		path.configWheelRadius(wheelRadius);
-		path.constructMainPath(v, a, omega);
-		path.resetAccumulation();
+		double stage2x1 = 5;
+		double stage2y1 = 2;
+		double stage2x2 = 10;
+		double stage2y2 = 10;
+		double stage2y3 = 15;
 		
-		time = new ArrayList<Double>();
-		List<Double> head = new ArrayList<Double>();
-		List<Double> omeg = new ArrayList<Double>();
-//		List<Double> left = new ArrayList<Double>();
-//		List<Double> right = new ArrayList<Double>();
-//		List<Double> leftV = new ArrayList<Double>();
-//		List<Double> rightV = new ArrayList<Double>();
-//		List<Double> leftA = new ArrayList<Double>();
-//		List<Double> rightA = new ArrayList<Double>();
-//		List<Double> leftF = new ArrayList<Double>();
-//		List<Double> rightF = new ArrayList<Double>();
-		List<Double> leftP = new ArrayList<Double>();
-		List<Double> rightP = new ArrayList<Double>();
-		List<Position> les = new ArrayList<Position>();
-		List<Position> ris = new ArrayList<Position>();
-		List<Double> lx = new ArrayList<Double>();
-		List<Double> rx = new ArrayList<Double>();
-		List<Double> ly = new ArrayList<Double>();
-		List<Double> ry = new ArrayList<Double>();
-		List<Double> la = new ArrayList<Double>();
-		List<Double> ra = new ArrayList<Double>();
-		List<Double> lw = new ArrayList<Double>();
-		List<Double> rw = new ArrayList<Double>();
-		List<Double> lv = new ArrayList<Double>();
-		List<Double> rv = new ArrayList<Double>();
+		double[][] leftPathArr = new double[][]{
+			{robotLength/2, height / 2},
+			{(distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2},
+			{(distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta, height/2+delta},
+			{(distanceToSwitchFromAlliance+robotLength)/2+delta-xDelta, height-distanceToSwitchFromWall-switchLength/2+yDelta},
+			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta}
+		};
+		double displacementV = 10;
+		Point[] leftPath = new Point[]{
+			new Point(robotLength/2, height/2, displacementV, 0, 0, 0),
+			new Point((distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2+5, 10, 5, 0,0),
+			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, displacementV, 0, 0, 0),
+		};
 		
-//		List<Double> mx = new ArrayList<Double>();
-//		List<Double> my = new ArrayList<Double>();
-//		List<Double> px = new ArrayList<Double>();
-//		List<Double> py = new ArrayList<Double>();
-//		List<Double> ex = new ArrayList<Double>();
-//		List<Double> ey = new ArrayList<Double>();
-//		List<Position> l = new ArrayList<Position>();
+		Spline[] xyspl = Spline.interpolateQuintic(leftPath);
+		
+		Trajectory frcPathTraj = new Trajectory(Samples.LOW, xyspl);
+		PathPlanner pather = new PathPlanner(frcPathTraj, robotWidth);
+		
+		pather.calculateSmoothVelocities(10, 10, 0.02);
+
+		GoodGraphing figure = new GoodGraphing(pather.getCenterPath(), null, Color.blue);
+		figure.setXTic(0, width, 10);
+		figure.setYTic(0, height, 10);
+		figure.setXLabel("Field width (inches)");
+		figure.setYLabel("Field width (inches)");
+		figure.setTitle("Field with left and right paths\nCenter = blue\nLeft = red\nRight = green");
+		figure.xGridOn();
+		figure.yGridOn();
+		figure.addData(pather.getLeftPath(), Color.red);
+		figure.addData(pather.getRightPath(), Color.green);
+		
+		GoodGraphing velFigure = new GoodGraphing(pather.getCenterVelocities(), Color.blue, null);
+		velFigure.setTitle("Velocity profile\nCenter = blue\nLeft = red\nRight = green");
+		velFigure.setXLabel("Time (s)");
+		velFigure.setYLabel("Magnitude (inches / second)");
+		velFigure.xGridOn();
+		velFigure.yGridOn();
+		velFigure.addData(pather.getLeftSmoothVelocities(), Color.red);
+		velFigure.addData(pather.getRightSmoothVelocities(), Color.green);
+		
+//		try {
+//			double t = 0;
+//			List<Double> time = new ArrayList<Double>();
+//			List<Double> x = new ArrayList<Double>();
+//			List<Double> y = new ArrayList<Double>();
+//			List<Double> derivX = new ArrayList<Double>();
+//			List<Double> derivY = new ArrayList<Double>();
+//			List<Double> derivYX = new ArrayList<Double>();
+//			while (t <= xyspl[0].seconds) {
+//				double xx = xyspl[0].get(t);
+//				double yy = xyspl[1].get(t);
+//				time.add(t);
+//				x.add(xx);
+//				y.add(yy);
+//				derivX.add(xyspl[0].getDerivative(t));
+//				derivY.add(xyspl[1].getDerivative(t));
+//				derivYX.add(xyspl[1].getDerivative(t)/xyspl[0].getDerivative(t));
+//				System.out.println("xHat: "+xx+"\tyHat: "+yy);
+//				t += 0.01;
+//			}
+//			System.out.println("X:\n"+xyspl[0]);
+//			System.out.println("Y:\n"+xyspl[1]);
+//			System.out.println(xyspl[0].getArclength());
+//			System.out.println(xyspl[1].getArclength());
+//			derivYX.remove(0);
+//			derivYX.add(derivYX.get(derivYX.size()-1));
+//			viewGraph(x,y,leftPath);
+////			viewGraph(time,derivX);
+////			viewGraph(time,derivY);
+////			viewGraph(time,x);
+////			viewGraph(time,y);
+////			viewGraph(time,derivYX);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		Trajectory traj = new Trajectory(Samples.LOW, xyspl);
+//		List<Double> heading = new ArrayList<Double>();
+//		List<Double> curvature = new ArrayList<Double>();
+//		Position[][] poses = traj.getLeftRightPositions(22);
+//		List<Double> time = new ArrayList<Double>();
+//		List<Double> x = new ArrayList<Double>();
+//		List<Double> y = new ArrayList<Double>();
+//		List<Double> derivX = new ArrayList<Double>();
+//		List<Double> derivY = new ArrayList<Double>();
+//		List<Double> omegas = new ArrayList<Double>();
+//		Position[] left = poses[0];
+//		Position[] right = poses[1];
+//		try {
+//			
+//			double t = 0;
+//			while (t <= xyspl[0].seconds) {
+//				double xx = traj.getX(t);
+//				double yy = traj.getY(t);
+//				time.add(t);
+//				x.add(xx);
+//				y.add(yy);
+//				derivX.add(xyspl[0].getDerivative(t));
+//				derivY.add(xyspl[1].getDerivative(t));
+//				heading.add(traj.getHeading(t));
+//				curvature.add(traj.getCurvature(t));
+//				omegas.add(traj.getOmega(t));
+//				System.out.println("xHat: "+xx+"\tyHat: "+yy);
+//				t += 0.01;
+//			}
+//			System.out.println(traj.getLeftArclength());
+//			System.out.println(traj.getRightArclength());
+//			System.out.println(traj.getArclength());
+//			viewGraph(x, y, left, right);
+//			viewGraph(time, heading);
+////			viewGraph(time, curvature);
+////			viewGraph(time, derivX);
+////			viewGraph(time, derivY);
+//			viewGraph(time, omegas);
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		double DT = 0.02;
+//		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature), DT);
+////		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
+//		double v = 10, a = 10, omega = 50;
+//		double wheelRadius = 3;
+//		path.configWidth(width);
+//		path.configWheelRadius(wheelRadius);
+//		path.constructMainPath(v, a, omega);
+//		path.resetAccumulation();
+//		
+//		time = new ArrayList<Double>();
+//		List<Double> head = new ArrayList<Double>();
+//		List<Double> omeg = new ArrayList<Double>();
+////		List<Double> left = new ArrayList<Double>();
+////		List<Double> right = new ArrayList<Double>();
+////		List<Double> leftV = new ArrayList<Double>();
+////		List<Double> rightV = new ArrayList<Double>();
+////		List<Double> leftA = new ArrayList<Double>();
+////		List<Double> rightA = new ArrayList<Double>();
+////		List<Double> leftF = new ArrayList<Double>();
+////		List<Double> rightF = new ArrayList<Double>();
+//		List<Double> leftP = new ArrayList<Double>();
+//		List<Double> rightP = new ArrayList<Double>();
+//		List<Position> les = new ArrayList<Position>();
+//		List<Position> ris = new ArrayList<Position>();
+//		List<Double> lx = new ArrayList<Double>();
+//		List<Double> rx = new ArrayList<Double>();
 //		List<Double> ly = new ArrayList<Double>();
-//		List<Position> r = new ArrayList<Position>();
 //		List<Double> ry = new ArrayList<Double>();
-		
-		
-		for (int i = 0; i < (int)(path.getTotalTime() / DT)+1; i++) {
-			leftP.add(path.getLeftArclength(i));
-			rightP.add(path.getRightArclength(i));
-			lx.add(path.getLX(i));
-			ly.add(path.getLY(i));
-			rx.add(path.getRX(i));
-			ry.add(path.getRY(i));
-			la.add(path.getLeftAlpha(i));
-			ra.add(path.getRightAlpha(i));
-			lw.add(path.getLeftWheelOmega(i));
-			rw.add(path.getRightWheelOmega(i));
-			lv.add(path.getLeftVelocity(i));
-			rv.add(path.getRightVelocity(i));
-			head.add(path.getHeadingT(i));
-			omeg.add(path.getOmega(i));
-			les.add(new Position(path.getLX(i), path.getLY(i), 0));
-			ris.add(new Position(path.getRX(i), path.getRY(i), 0));
-			time.add(i * DT);
-		}
-		
-		viewGraph(time, head);
-		viewGraph(time, omeg);
-		viewGraph(lx, ly);
-		viewGraph(rx, ry);
-		Position[] l = new Position[les.size()];
-		Position[] r = new Position[ris.size()];
-		for (int i = 0; i < les.size(); i++) {
-			l[i] = les.get(i);
-			r[i] = ris.get(i);
-		}
-		viewGraph(x, y, l, r);
-//		viewGraph(time, la);
+//		List<Double> la = new ArrayList<Double>();
+//		List<Double> ra = new ArrayList<Double>();
+//		List<Double> lw = new ArrayList<Double>();
+//		List<Double> rw = new ArrayList<Double>();
+//		List<Double> lv = new ArrayList<Double>();
+//		List<Double> rv = new ArrayList<Double>();
+//		
+////		List<Double> mx = new ArrayList<Double>();
+////		List<Double> my = new ArrayList<Double>();
+////		List<Double> px = new ArrayList<Double>();
+////		List<Double> py = new ArrayList<Double>();
+////		List<Double> ex = new ArrayList<Double>();
+////		List<Double> ey = new ArrayList<Double>();
+////		List<Position> l = new ArrayList<Position>();
+////		List<Double> ly = new ArrayList<Double>();
+////		List<Position> r = new ArrayList<Position>();
+////		List<Double> ry = new ArrayList<Double>();
+//		
+//		
+//		for (int i = 0; i < (int)(path.getTotalTime() / DT)+1; i++) {
+//			leftP.add(path.getLeftArclength(i));
+//			rightP.add(path.getRightArclength(i));
+//			lx.add(path.getLX(i));
+//			ly.add(path.getLY(i));
+//			rx.add(path.getRX(i));
+//			ry.add(path.getRY(i));
+//			la.add(path.getLeftAlpha(i));
+//			ra.add(path.getRightAlpha(i));
+//			lw.add(path.getLeftWheelOmega(i));
+//			rw.add(path.getRightWheelOmega(i));
+//			lv.add(path.getLeftVelocity(i));
+//			rv.add(path.getRightVelocity(i));
+//			head.add(path.getHeadingT(i));
+//			omeg.add(path.getOmega(i));
+//			les.add(new Position(path.getLX(i), path.getLY(i), 0));
+//			ris.add(new Position(path.getRX(i), path.getRY(i), 0));
+//			time.add(i * DT);
+//		}
+//		
+//		viewGraph(time, head);
+//		viewGraph(time, omeg);
+//		viewGraph(lx, ly);
+//		viewGraph(rx, ry);
+//		Position[] l = new Position[les.size()];
+//		Position[] r = new Position[ris.size()];
+//		for (int i = 0; i < les.size(); i++) {
+//			l[i] = les.get(i);
+//			r[i] = ris.get(i);
+//		}
+//		viewGraph(x, y, l, r);
+////		viewGraph(time, la);
 //		viewGraph(time, ra);
 //		viewGraph(time, lw);
 //		viewGraph(time, rw);
