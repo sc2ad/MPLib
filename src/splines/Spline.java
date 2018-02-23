@@ -40,7 +40,14 @@ public class Spline implements PotentialSpline {
 			return splines[splines.length-1].get(1);
 		}
 		if (splines.length == 1) {
-			return (1 - 3*t*t + 2*t*t*t)*x0 + (t - 2*t*t + t*t*t)*v0 + (-t*t + t*t*t)*v1 + (3*t*t - 2*t*t*t)*x1;
+//			return (1 - 3*t*t + 2*t*t*t)*x0 + (t - 2*t*t + t*t*t)*v0 + (-t*t + t*t*t)*v1 + (3*t*t - 2*t*t*t)*x1;
+			double out1 = (1 - 10*t*t*t + 15*t*t*t*t - 6*t*t*t*t*t)*x0;
+			double out2 = (t - 6*t*t*t + 8*t*t*t*t - 3*t*t*t*t*t)*v0;
+			double out3 = (0.5*t*t - 1.5*t*t*t + 1.5*t*t*t*t - 0.5*t*t*t*t*t)*a0;
+			double out4 = (0.5*t*t*t - t*t*t*t + 0.5*t*t*t*t*t)*a1;
+			double out5 = (-4*t*t*t + 7*t*t*t*t - 3*t*t*t*t*t)*v1;
+			double out6 = (10*t*t*t - 15*t*t*t*t + 6*t*t*t*t*t)*x1;
+			return out1 + out2 + out3 + out4 + out5 + out6;
 		}
 		for (int i = 0; i < splines.length; i++) {
 			if (t >= i && t <= i+1) {
@@ -60,7 +67,14 @@ public class Spline implements PotentialSpline {
 			return splines[splines.length-1].getDerivative(1);
 		}
 		if (splines.length == 1) {
-			return (1 - 4*t + 3*t*t)*v0 + t*(-2 + 3*t)*v1 + 6*(-1 + t)*t*(x0 - x1);
+//			return (1 - 4*t + 3*t*t)*v0 + t*(-2 + 3*t)*v1 + 6*(-1 + t)*t*(x0 - x1);
+			double out1 = -30*(t-1)*(t-1)*t*t*x0;
+			double out2 = -(t-1)*(t-1)*(15*t*t - 2*t - 1)*v0;
+			double out3 = t*(-2.5*t*t*t + 6*t*t - 4.5*t + 1)*a0;
+			double out4 = t*t*(2.5*t*t - 4*t + 1.5)*a1;
+			double out5 = t*t*(-15*t*t + 28*t - 12)*v1;
+			double out6 = 30*(t-1)*(t-1)*t*t*x1;
+			return out1 + out2 + out3 + out4 + out5 + out6;
 		}
 		for (int i = 0; i < splines.length; i++) {
 			if (t >= i && t <= i+1) {
@@ -70,44 +84,45 @@ public class Spline implements PotentialSpline {
 		
 		return Double.NaN; // Never happens!
 	}
-	public double getSecondDerivative(double t) {
-		// X Value is out of range of the splines.
-		if (t < 0) {
-			// Too small
-			return splines[0].getDerivative(0);
-		}
-		if (t > seconds) {
-			return splines[splines.length-1].getSecondDerivative(1);
-		}
-		if (splines.length == 1) {
-			return 2 * ((-2 + 3*t)*v0 + (-1 + 3*t)*v1 + 3*(-1 + 2*t)*(x0 - x1));
-		}
-		for (int i = 0; i < splines.length; i++) {
-			if (t >= i && t <= i+1) {
-				return splines[i].getSecondDerivative(t - i);
-			}
-		}
-		return Double.NaN; // Never ever ever
-	}
-	public double getThirdDerivative(double t) {
-		// X Value is out of range of the splines.
-		if (t < 0) {
-			// Too small
-			return splines[0].getDerivative(0);
-		}
-		if (t > seconds) {
-			return splines[splines.length-1].getSecondDerivative(1);
-		}
-		if (splines.length == 1) {
-			return 6*v0 + 6*v1 +12*x0 + 12*x1;
-		}
-		for (int i = 0; i < splines.length; i++) {
-			if (t >= i && t <= i+1) {
-				return splines[i].getThirdDerivative(t - i);
-			}
-		}
-		return Double.NaN; // Never ever ever
-	}
+//	public double getSecondDerivative(double t) {
+//		// X Value is out of range of the splines.
+//		if (t < 0) {
+//			// Too small
+//			return splines[0].getDerivative(0);
+//		}
+//		if (t > seconds) {
+//			return splines[splines.length-1].getSecondDerivative(1);
+//		}
+//		if (splines.length == 1) {
+//			
+////			return 2 * ((-2 + 3*t)*v0 + (-1 + 3*t)*v1 + 3*(-1 + 2*t)*(x0 - x1));
+//		}
+//		for (int i = 0; i < splines.length; i++) {
+//			if (t >= i && t <= i+1) {
+//				return splines[i].getSecondDerivative(t - i);
+//			}
+//		}
+//		return Double.NaN; // Never ever ever
+//	}
+//	public double getThirdDerivative(double t) {
+//		// X Value is out of range of the splines.
+//		if (t < 0) {
+//			// Too small
+//			return splines[0].getDerivative(0);
+//		}
+//		if (t > seconds) {
+//			return splines[splines.length-1].getSecondDerivative(1);
+//		}
+//		if (splines.length == 1) {
+//			return 6*v0 + 6*v1 +12*x0 + 12*x1;
+//		}
+//		for (int i = 0; i < splines.length; i++) {
+//			if (t >= i && t <= i+1) {
+//				return splines[i].getThirdDerivative(t - i);
+//			}
+//		}
+//		return Double.NaN; // Never ever ever
+//	}
 	public Spline getSpline(int index) {
 		return splines[index];
 	}

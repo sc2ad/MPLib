@@ -77,7 +77,8 @@ public class Trajectory {
 	}
 	public double getCurvature(double time) {
 		// How to find the maximum of this numerically?
-		return (xySplines[0].getDerivative(time) * xySplines[1].getSecondDerivative(time) - xySplines[0].getSecondDerivative(time) * xySplines[1].getDerivative(time)) / Math.pow((Math.pow(xySplines[0].getDerivative(time), 2) + Math.pow(xySplines[1].getDerivative(time), 2)), 1.5);
+		return 0;
+//		return (xySplines[0].getDerivative(time) * xySplines[1].getSecondDerivative(time) - xySplines[0].getSecondDerivative(time) * xySplines[1].getDerivative(time)) / Math.pow((Math.pow(xySplines[0].getDerivative(time), 2) + Math.pow(xySplines[1].getDerivative(time), 2)), 1.5);
 	}
 	public double getMaxCurvature(double time) {
 		// TODO THIS NEEDS TO HAPPEN!
