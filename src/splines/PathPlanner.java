@@ -15,6 +15,8 @@ public class PathPlanner {
 	private double[][] centerPath;
 	private double[][] leftPath;
 	private double[][] rightPath;
+	private double[] headings;
+	private double[] omegas;
 	
 	public PathPlanner(Trajectory p, double w) {
 		path=p;
@@ -65,6 +67,8 @@ public class PathPlanner {
 			leftPath = new double[length][2];
 			rightPath = new double[length][2];
 			centerPath = new double[length][2];
+			headings = new double[length];
+			omegas = new double[length];
 			
 			double centerX = path.getX(0), centerY = path.getY(0);
 			double heading = path.getHeading(0);
@@ -78,6 +82,8 @@ public class PathPlanner {
 				rightPath[i][1] = rightY;
 				centerPath[i][0] = centerX;
 				centerPath[i][1] = centerY;
+				headings[i] = heading;
+				omegas[i] = path.getOmega(splineDT * i);
 				
 				double left = centerProfile.getSpeed(i * dt) + path.getOmega(splineDT * i) * width / 2;
 				double right = centerProfile.getSpeed(i * dt) - path.getOmega(splineDT * i) * width / 2;
@@ -115,5 +121,11 @@ public class PathPlanner {
 	}
 	public double[][] getRightPath() {
 		return rightPath;
+	}
+	public double[] getHeadings() {
+		return headings;
+	}
+	public double[] getOmegas() {
+		return omegas;
 	}
 }

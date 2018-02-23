@@ -157,6 +157,14 @@ public class PathTest {
 		velFigure.addData(pather.getLeftSmoothVelocities(), Color.red);
 		velFigure.addData(pather.getRightSmoothVelocities(), Color.green);
 		
+		GoodGraphing heading = new GoodGraphing(pather.getOmegas(), Color.black, Color.black);
+		heading.addData(pather.getHeadings(), Color.red);
+		heading.setTitle("Headings and Omegas\nHeadings = red\nOmegas = black");
+		heading.setXLabel("Time (s)");
+		heading.setYLabel("Radians or Radians / second");
+		heading.xGridOn();
+		heading.yGridOn();
+		
 //		try {
 //			double t = 0;
 //			List<Double> time = new ArrayList<Double>();

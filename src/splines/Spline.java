@@ -89,6 +89,25 @@ public class Spline implements PotentialSpline {
 		}
 		return Double.NaN; // Never ever ever
 	}
+	public double getThirdDerivative(double t) {
+		// X Value is out of range of the splines.
+		if (t < 0) {
+			// Too small
+			return splines[0].getDerivative(0);
+		}
+		if (t > seconds) {
+			return splines[splines.length-1].getSecondDerivative(1);
+		}
+		if (splines.length == 1) {
+			return 6*v0 + 6*v1 +12*x0 + 12*x1;
+		}
+		for (int i = 0; i < splines.length; i++) {
+			if (t >= i && t <= i+1) {
+				return splines[i].getThirdDerivative(t - i);
+			}
+		}
+		return Double.NaN; // Never ever ever
+	}
 	public Spline getSpline(int index) {
 		return splines[index];
 	}
