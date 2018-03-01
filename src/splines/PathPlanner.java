@@ -94,12 +94,16 @@ public class PathPlanner {
 				rightSmoothVelocities[i] = right;
 				
 				heading = path.getHeading(splineDT * i);
-				leftX += left * Math.cos(heading) * dt;
-				leftY += left * Math.sin(heading) * dt;
-				rightX += right * Math.cos(heading) * dt;
-				rightY += right * Math.sin(heading) * dt;
+//				leftX += left * Math.cos(heading) * dt;
+//				leftY += left * Math.sin(heading) * dt;
+//				rightX += right * Math.cos(heading) * dt;
+//				rightY += right * Math.sin(heading) * dt;
 				centerX += centerProfile.getSpeed(i * dt) * Math.cos(heading) * dt;
 				centerY += centerProfile.getSpeed(i * dt) * Math.sin(heading) * dt;
+				leftX = centerX - width / 2 * Math.sin(heading);
+				leftY = centerY + width / 2 * Math.cos(heading);
+				rightX = centerX + width / 2 * Math.sin(heading);
+				rightY = centerY - width / 2 * Math.cos(heading);
 			}
 		}
 		return smoothVelocities;

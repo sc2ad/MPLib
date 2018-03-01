@@ -125,8 +125,9 @@ public class PathTest {
 		};
 		double displacementV = 10;
 		Point[] leftPath = new Point[]{
-			new Point(robotLength/2, height/2, displacementV, 0, 0, 0),
-			new Point((distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2+5, 10, 5, 0,0),
+			new Point(robotLength/2, height/2, displacementV, 0, 2, 0),
+			new Point((distanceToSwitchFromAlliance-robotLength)/2-delta-xDelta, height/2+5, 10, 5, 5, 2),
+			new Point(distanceToSwitchFromAlliance-robotLength/2-delta, height-distanceToSwitchFromWall-switchLength/2+yDelta-5, displacementV, 5, 5, 2),
 			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, displacementV, 0, 0, 0),
 		};
 		
