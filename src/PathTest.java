@@ -91,7 +91,7 @@ public class PathTest {
 	private static double[][] makeScale() {
 		double distanceX = 299.65;
 		double distanceY = 71.57;
-		double scalePlatformLength = 38.719;
+		double scalePlatformLength = 36;
 		return new double[][]{
 			{distanceX, distanceY},
 			{distanceX, fieldH-distanceY},
@@ -105,6 +105,39 @@ public class PathTest {
 			{fieldW-distanceX, distanceY},
 			{distanceX, distanceY}
 		};
+	}
+	private static double[][] makePortals() {
+		double portalX = 36;
+		double portalY = 29.69;
+		return new double[][]{
+			{0, fieldH-portalY},
+			{portalX, fieldH},
+			{fieldW-portalX, fieldH},
+			{fieldW, fieldH-portalY},
+			{fieldW, portalY},
+			{fieldW-portalX, 0},
+			{portalX, 0},
+			{0, portalY}
+		};
+	}
+	private static double[][] makeExchanges(int exchangeNumber) {
+		double portalY = 29.69;
+		double exchangeDistance = 6 * 12 + portalY;
+		if (exchangeNumber == 0) {
+			return new double[][]{
+				{0, fieldH-exchangeDistance},
+				{5, fieldH-exchangeDistance},
+				{5, fieldH-exchangeDistance-4*12},
+				{0, fieldH-exchangeDistance-4*12}
+			};
+		} else {
+			return new double[][]{
+				{fieldW, exchangeDistance},
+				{fieldW-5, exchangeDistance},
+				{fieldW-5, exchangeDistance+4*12},
+				{fieldW, exchangeDistance+4*12}
+			};
+		}
 	}
 	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {		
@@ -132,6 +165,9 @@ public class PathTest {
 		figure.addData(makeNullzones(0), Color.black);
 		figure.addData(makeNullzones(1), Color.black);
 		figure.addData(makeScale(), Color.black);
+		figure.addData(makePortals(), Color.black);
+		figure.addData(makeExchanges(0), Color.black);
+		figure.addData(makeExchanges(1), Color.black);
 		
 		double xDelta = 10;
 		double yDelta = 0;
