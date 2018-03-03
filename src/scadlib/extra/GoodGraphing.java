@@ -1,6 +1,18 @@
 package scadlib.extra;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Robot;
+import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -10,13 +22,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * This class is a basic plotting class using the Java AWT interface. It has basic features which allow the user 
@@ -77,6 +97,12 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     
     //Link List to hold all different plots on one graph.
     private LinkedList<xyNode> link; 
+    
+    private int leftIndex = -1;
+    private int centerIndex = -1;
+    private int rightIndex = -1;
+    
+    private JSlider slider;
     
 
     /**
@@ -172,11 +198,25 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     	JFrame g = new JFrame("Figure " + count);
         g.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         g.add(this);
+        slider = new JSlider(JSlider.HORIZONTAL, 0, 1000, 1);
+        slider.addChangeListener(new SliderListener(0, this));
+        add(slider);
         g.setSize(600,400);
         g.setLocationByPlatform(true);
         g.setVisible(true);
          
         menu(g,this);	
+    }
+    public GoodGraphing(double[][] leftData, double[][] centerData, double[][] rightData, Color leftColor, Color centerColor, Color rightColor) {
+    	this(getXVector(leftData), getYVector(leftData), leftColor, null);
+    	addData(centerData, centerColor);
+    	addData(rightData, rightColor);
+    	
+    	slider.setMaximum(centerData.length);
+    	
+    	leftIndex = 0;
+    	centerIndex = 1;
+    	rightIndex = 2;
     }
     
     /**
@@ -267,8 +307,7 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
         
         int w = getWidth();
         int h = getHeight();
-    
-        // Draw X and Y lines axis.
+        
         Line2D yaxis = new Line2D.Double(xPAD, yPAD, xPAD, h-yPAD);
         Line2D.Double xaxis = new Line2D.Double(xPAD, h-yPAD, w-xPAD, h-yPAD);
         g2.draw(yaxis); 
@@ -288,8 +327,23 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
         setXLabel(g2, xLabel);
         setYLabel(g2, yLabel);
         setTitle(g2, titleLabel);
-        
     }
+    private class SliderListener implements ChangeListener {
+    	public int timeValue;
+    	public GoodGraphing good;
+    	public SliderListener(int t, GoodGraphing goog) {
+    		timeValue = t;
+    		good = goog;
+    	}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			JSlider source = (JSlider)e.getSource();
+        	timeValue = source.getValue();
+        	good.drawTime(timeValue, (Graphics2D)good.getGraphics());
+		}
+    }
+    
     
     public void setXTic(double lowerBound, double upperBound, double stepSize)
     {
@@ -358,6 +412,52 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     	}
     	
     	g2.setColor(tempC);
+    }
+    
+    public void drawTime(int time, Graphics2D g2) {
+//    	paintComponent(g2);
+    	int w = getWidth();
+        int h = getHeight();
+        
+        g2.clearRect(0, 0, w, h);
+        
+        Line2D yaxis = new Line2D.Double(xPAD, yPAD, xPAD, h-yPAD);
+        Line2D.Double xaxis = new Line2D.Double(xPAD, h-yPAD, w-xPAD, h-yPAD);
+        g2.draw(yaxis); 
+        g2.draw(xaxis);
+      //find Max Y limits
+        getMinMax(link);
+        
+        //draw ticks
+        drawYTickRange(g2, yaxis, 15, yMax, yMin);
+//        drawXTickRange(g2, xaxis, 15, xMax, xMin);
+        
+        //plot all data
+        plot(g2);
+        
+        //draw x and y labels
+        setXLabel(g2, xLabel);
+        setYLabel(g2, yLabel);
+        setTitle(g2, titleLabel);
+        
+    	int robotLength = 32;
+    	for (int i = 0; i < link.size(); i++) {
+			if (leftIndex != -1) {
+				if (time < link.get(i).x.length) {
+					double xScale = (double)(w - 2*xPAD)/(upperXtic-lowerXtic);
+			        double yScale = (double)(h - 2*yPAD)/(upperYtic-lowerYtic);
+					
+					int width = 2;
+					int height = 2;
+					int x1 = (int) (xPAD + xScale*(int)link.get(leftIndex).x[time] + lowerXtic*xScale);
+					int y1 = (int) (h - yPAD - yScale*(int)link.get(leftIndex).y[time] + lowerYtic*yScale);
+					int x2 = (int) (xPAD + xScale*(int)link.get(rightIndex).x[time] + lowerXtic*xScale);
+					int y2 = (int) (h - yPAD - yScale*(int)link.get(rightIndex).y[time] + lowerYtic*yScale);
+					g2.drawRect(x1, y1, width, height);
+					g2.drawRect(x2, y2, width, height);
+				}
+			}
+    	}
     }
     
     /**
