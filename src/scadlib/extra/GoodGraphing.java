@@ -303,30 +303,31 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 =  (Graphics2D)g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
-        int w = getWidth();
-        int h = getHeight();
-        
-        Line2D yaxis = new Line2D.Double(xPAD, yPAD, xPAD, h-yPAD);
-        Line2D.Double xaxis = new Line2D.Double(xPAD, h-yPAD, w-xPAD, h-yPAD);
-        g2.draw(yaxis); 
-        g2.draw(xaxis);
-        
-        //find Max Y limits
-        getMinMax(link);
-        
-        //draw ticks
-        drawYTickRange(g2, yaxis, 15, yMax, yMin);
-        drawXTickRange(g2, xaxis, 15, xMax, xMin);
-        
-        //plot all data
-        plot(g2);
-        
-        //draw x and y labels
-        setXLabel(g2, xLabel);
-        setYLabel(g2, yLabel);
-        setTitle(g2, titleLabel);
+        drawTime(slider.getValue(), g2);
+//        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//        
+//        int w = getWidth();
+//        int h = getHeight();
+//        
+//        Line2D yaxis = new Line2D.Double(xPAD, yPAD, xPAD, h-yPAD);
+//        Line2D.Double xaxis = new Line2D.Double(xPAD, h-yPAD, w-xPAD, h-yPAD);
+//        g2.draw(yaxis); 
+//        g2.draw(xaxis);
+//        
+//        //find Max Y limits
+//        getMinMax(link);
+//        
+//        //draw ticks
+//        drawYTickRange(g2, yaxis, 15, yMax, yMin);
+//        drawXTickRange(g2, xaxis, 15, xMax, xMin);
+//        
+//        //plot all data
+//        plot(g2);
+//        
+//        //draw x and y labels
+//        setXLabel(g2, xLabel);
+//        setYLabel(g2, yLabel);
+//        setTitle(g2, titleLabel);
     }
     private class SliderListener implements ChangeListener {
     	public int timeValue;
@@ -430,7 +431,7 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
         
         //draw ticks
         drawYTickRange(g2, yaxis, 15, yMax, yMin);
-//        drawXTickRange(g2, xaxis, 15, xMax, xMin);
+        drawXTickRange(g2, xaxis, 15, xMax, xMin);
         
         //plot all data
         plot(g2);
