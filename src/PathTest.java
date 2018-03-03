@@ -141,11 +141,6 @@ public class PathTest {
 	}
 	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {		
-		GoodGraphing figure = new GoodGraphing(new double[][]{{0,0}});
-		figure.xGridOn();
-		figure.yGridOn();
-		figure.setYLabel("Y (inches)");
-		figure.setXLabel("X (inches)");
 		double width = 648;
 		double height = 324.5;
 		double robotWidth = 25.75;
@@ -155,19 +150,7 @@ public class PathTest {
 		double distanceToSwitchFromAlliance = 140;
 		double delta = 10;
 		double widthOfSwitch = 56;
-		figure.setXTic(0, width, 12);
-		figure.setYTic(0, height, 12);
-		// Add the close switch
 		
-		figure.addData(makeSwitch(0), Color.black);
-		figure.addData(makeSwitch(1), Color.black);
-		figure.addData(makePlatform(), Color.black);
-		figure.addData(makeNullzones(0), Color.black);
-		figure.addData(makeNullzones(1), Color.black);
-		figure.addData(makeScale(), Color.black);
-		figure.addData(makePortals(), Color.black);
-		figure.addData(makeExchanges(0), Color.black);
-		figure.addData(makeExchanges(1), Color.black);
 		
 		double xDelta = 10;
 		double yDelta = 0;
@@ -258,7 +241,26 @@ public class PathTest {
 		reversePath(stage2);
 		reversePath(goBackFromCube);
 		
-		addDataToGraph(fpp, figure);
+		GoodGraphing figure = new GoodGraphing(fpp.leftPath, fpp.smoothPath, fpp.rightPath, Color.red, Color.blue, Color.green);
+		figure.xGridOn();
+		figure.yGridOn();
+		figure.setYLabel("Y (inches)");
+		figure.setXLabel("X (inches)");
+		figure.setXTic(0, width, 12);
+		figure.setYTic(0, height, 12);
+		// Add the close switch
+		
+		figure.addData(makeSwitch(0), Color.black);
+		figure.addData(makeSwitch(1), Color.black);
+		figure.addData(makePlatform(), Color.black);
+		figure.addData(makeNullzones(0), Color.black);
+		figure.addData(makeNullzones(1), Color.black);
+		figure.addData(makeScale(), Color.black);
+		figure.addData(makePortals(), Color.black);
+		figure.addData(makeExchanges(0), Color.black);
+		figure.addData(makeExchanges(1), Color.black);
+		
+//		addDataToGraph(fpp, figure);
 		addDataToGraph(stage2, figure);
 		addDataToGraph(grabCube, figure);
 		addDataToGraph(goBackFromCube, figure);
