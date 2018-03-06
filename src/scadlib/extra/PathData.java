@@ -69,6 +69,12 @@ public class PathData {
 			break;
 		}
 	}
+	public void updateTime(double time) {
+		this.totalTime = time;
+	}
+	public double getTime() {
+		return totalTime;
+	}
 	private void flipPath(FastPathPlanner path) {
 		double[][] tmp = path.rightPath;
 		path.rightPath = path.leftPath;

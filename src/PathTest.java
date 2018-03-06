@@ -400,7 +400,10 @@ public class PathTest {
 //		makeGraph(width, height, false, getPaths(rightPathData));
 //		makeGraph(width, height, false, getPaths(leftPathData));
 		
-		makeGraph(width, height, true, right2CubeScaleStartData[1]);
+		
+		
+		makeGraph(width, height, true, rightScaleStartData);
+//		makeGraph(width, height, true, right2CubeScaleStartData[1]);
 		
 	}
 	
