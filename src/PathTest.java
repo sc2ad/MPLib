@@ -277,9 +277,13 @@ public class PathTest {
 		};
 		
 		double[][] rightScaleStart = new double[][]{
-			{robotLength/2, portalY+robotWidth/2},
-			{324, portalY+robotWidth/2},
-			{324, 72+5-robotLength/2},
+			{18.625, 42.565},
+			{40.0, 42.565},
+			{300.4767123287672, 36.105082417582416},
+			{314.6794520547945, 42.345467032967036},
+			{320.8931506849315, 48.58585164835165},
+			{324.0, 57.0},
+			{324.0, 58.375},
 		};
 		
 		double scaleYDelta = 8;
@@ -339,8 +343,8 @@ public class PathTest {
 		PathData leftSwitchStartData = new PathData(leftSwitchStart, 5, 0.02, robotWidth);
 		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5, 0.02, robotWidth);
 		
-		PathData leftScaleStartData = new PathData(leftScaleStart, 6, 0.02, robotWidth);
-		PathData rightScaleStartData = new PathData(rightScaleStart, 6, 0.02, robotWidth);
+		PathData leftScaleStartData = new PathData(leftScaleStart, 8, 0.02, robotWidth);
+		PathData rightScaleStartData = new PathData(rightScaleStart, 8, 0.02, robotWidth);
 		
 		PathData leftScaleStartDataNew = new PathData(leftScaleStartNew, 6, 0.02, robotWidth);
 		PathData rightScaleStartDataNew = new PathData(rightScaleStartNew, 6, 0.02, robotWidth);
@@ -436,6 +440,17 @@ public class PathTest {
 		figure.addData(makePortals(), Color.black);
 		figure.addData(makeExchanges(0), Color.black);
 		figure.addData(makeExchanges(1), Color.black);
+	
+		if (showVelocity) {
+			GoodGraphing velocity = new GoodGraphing(data.path.smoothCenterVelocity, null, Color.blue);
+			velocity.yGridOn();
+			velocity.xGridOn();
+			velocity.setYLabel("Velocity (in/s)");
+			velocity.setXLabel("time (seconds)");
+			velocity.setTitle("Velocity profile\nLeft = Red, Right = Green");
+			velocity.addData(data.path.smoothLeftVelocity, Color.red);
+			velocity.addData(data.path.smoothRightVelocity, Color.green);
+		}
 	}
 	
 	public static void makeGraph(double width, double height, boolean showVelocity, FastPathPlanner... paths) {
