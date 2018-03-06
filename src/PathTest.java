@@ -291,11 +291,46 @@ public class PathTest {
 			{distanceToScaleFromAlliance-robotLength/2+5, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta},
 		};
 		
+		double backUpTurnPoint = 55;
+		// Need to fix velocity being negative here
+		double[][] leftScaleBackup = new double[][]{
+			{distanceToScaleFromAlliance-robotLength/2+5, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta},
+			{distanceToScaleFromAlliance-robotLength/2-10, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta},
+			{distanceToScaleFromAlliance-robotLength/2-50, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+3},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+18},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+22},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+25},			
+		};
+		
+		double xDistanceToCube = 17;
+		double cubeYdisp = 20;
+		
+		double[][] leftScaleGrabCube = new double[][]{
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+25},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+22},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint-xDistanceToCube, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta-cubeYdisp},
+		};
+		
 		double[][] rightScaleStartNew = new double[][]{
 			{robotLength/2, portalY+robotWidth/2},
 			{distanceToSwitchFromAlliance+switchLength+robotLength/2, portalY+robotWidth/2},
 			{distanceToScaleFromAlliance-robotLength/2-40, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
 			{distanceToScaleFromAlliance-robotLength/2+5, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
+		};
+		
+		double[][] rightScaleBackup = new double[][]{
+			{distanceToScaleFromAlliance-robotLength/2+5, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
+			{distanceToScaleFromAlliance-robotLength/2-10, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
+			{distanceToScaleFromAlliance-robotLength/2-50, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-3},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-18},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-22},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-25},			
+		};
+		
+		double[][] rightScaleGrabCube = new double[][]{
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-25},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta-22},
+			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint-xDistanceToCube, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta+cubeYdisp},
 		};
 		
 		PathData leftSwitchStartDataNew = new PathData(leftSwitchStartNew, 5, 0.02, robotWidth);
@@ -305,27 +340,43 @@ public class PathTest {
 		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5, 0.02, robotWidth);
 		
 		PathData leftScaleStartData = new PathData(leftScaleStart, 6, 0.02, robotWidth);
-		PathData rightScaleStartData = new PathData(rightScaleStart, 5, 0.02, robotWidth);
+		PathData rightScaleStartData = new PathData(rightScaleStart, 6, 0.02, robotWidth);
 		
 		PathData leftScaleStartDataNew = new PathData(leftScaleStartNew, 6, 0.02, robotWidth);
 		PathData rightScaleStartDataNew = new PathData(rightScaleStartNew, 6, 0.02, robotWidth);
+		
+		PathData[] left2CubeScaleStartData = new PathData[]{
+			leftScaleStartDataNew,
+			new PathData(leftScaleBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(leftScaleGrabCube, 1, 0.02, robotWidth),
+			new PathData(leftScaleGrabCube, 1, 0.02, robotWidth, PathData.PathParameter.REVERSE),
+			new PathData(leftScaleBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIP),
+		};
+		
+		PathData[] right2CubeScaleStartData = new PathData[]{
+			rightScaleStartDataNew,
+			new PathData(rightScaleBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(rightScaleGrabCube, 1, 0.02, robotWidth),
+			new PathData(rightScaleGrabCube, 1, 0.02, robotWidth, PathData.PathParameter.REVERSE),
+			new PathData(rightScaleBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIP),
+		};
 		
 		PathData leftPathData = new PathData(leftPath, 3.2, 0.02, robotWidth);
 		PathData rightPathData = new PathData(rightPath, 3.2, 0.02, robotWidth);
 		
 		PathData[] left2CubePathArrays = new PathData[]{
 			new PathData(leftPath, 3.2, 0.02, robotWidth),
-			new PathData(leftTurnBack, 2, 0.02, robotWidth, true),
+			new PathData(leftTurnBack, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(leftGrabCube, 1, 0.02, robotWidth),
-			new PathData(leftReverseCube, 1, 0.02, robotWidth, true),
+			new PathData(leftReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(leftTurnToSwitch, 2, 0.02, robotWidth)
 		};
 		
 		PathData[] right2CubePathArrays = new PathData[]{
 			new PathData(rightPath, 3.2, 0.02, robotWidth), 
-			new PathData(rightTurnBack, 2, 0.02, robotWidth, true), 
+			new PathData(rightTurnBack, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE), 
 			new PathData(rightGrabCube, 1, 0.02, robotWidth), 
-			new PathData(rightReverseCube, 1, 0.02, robotWidth, true),
+			new PathData(rightReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(rightTurnToSwitch, 2, 0.02, robotWidth)
 		};
 //		makeGraph(width, height, true, getPaths(leftSwitchStartData));
@@ -334,16 +385,23 @@ public class PathTest {
 //		makeGraph(width, height, true, getPaths(leftSwitchStartDataNew));
 //		makeGraph(width, height, true, getPaths(rightSwitchStartDataNew));
 		
-		makeGraph(width, height, true, getPaths(leftScaleStartData));
-		makeGraph(width, height, true, getPaths(rightScaleStartData));
+//		makeGraph(width, height, false, getPaths(leftScaleStartData));
+//		makeGraph(width, height, false, getPaths(rightScaleStartData));
 		
-		makeGraph(width, height, true, getPaths(leftScaleStartDataNew));
-		makeGraph(width, height, true, getPaths(rightScaleStartDataNew));
+//		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
+//		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
+		
+//		makeGraph(width, height, true, getPaths(left2CubeScaleStartData));
+//		makeGraph(width, height, true, getPaths(right2CubeScaleStartData));
+//		makeGraph(width, height, true, getPaths(right2CubeScaleStartData[1]));
 		
 //		makeGraph(width, height, false, getPaths(right2CubePathArrays));
 //		makeGraph(width, height, false, getPaths(left2CubePathArrays));
 //		makeGraph(width, height, false, getPaths(rightPathData));
 //		makeGraph(width, height, false, getPaths(leftPathData));
+		
+		makeGraph(width, height, true, right2CubeScaleStartData[1]);
+		
 	}
 	
 	public static FastPathPlanner[] getPaths(PathData... pathData) {
@@ -354,9 +412,32 @@ public class PathTest {
 		return paths;
 	}
 	
+	public static void makeGraph(double width, double height, boolean showVelocity, PathData data) {
+		// Makes a single graph
+		GoodGraphing figure = new GoodGraphing(data);
+		figure.setTitle("Field View");
+		figure.xGridOn();
+		figure.yGridOn();
+		figure.setYLabel("Y (inches)");
+		figure.setXLabel("X (inches)");
+		figure.setXTic(0, width, 12);
+		figure.setYTic(0, height, 12);
+		// Add the close switch
+		
+		figure.addData(makeSwitch(0), Color.black);
+		figure.addData(makeSwitch(1), Color.black);
+		figure.addData(makePlatform(), Color.black);
+		figure.addData(makeNullzones(0), Color.black);
+		figure.addData(makeNullzones(1), Color.black);
+		figure.addData(makeScale(), Color.black);
+		figure.addData(makePortals(), Color.black);
+		figure.addData(makeExchanges(0), Color.black);
+		figure.addData(makeExchanges(1), Color.black);
+	}
+	
 	public static void makeGraph(double width, double height, boolean showVelocity, FastPathPlanner... paths) {
 		FastPathPlanner fpp = paths[0];
-		GoodGraphing figure = new GoodGraphing(fpp.leftPath, fpp.smoothPath, fpp.rightPath, Color.red, Color.blue, Color.green);
+		GoodGraphing figure = new GoodGraphing(fpp.leftPath, fpp.smoothPath, fpp.rightPath, fpp.nodeOnlyPath, Color.red, Color.blue, Color.green);
 		figure.setTitle("Field View");
 		figure.xGridOn();
 		figure.yGridOn();

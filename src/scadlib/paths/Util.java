@@ -64,6 +64,26 @@ public class Util {
 		}
 		return out;
 	}
+	public static double[][] getDoubleArr2D(List<Double[]> list) {
+		double[][] out = new double[list.size()][list.get(0).length];
+		for (int i = 0; i < out.length; i++) {
+			for (int j = 0; j < out[i].length; j++) {
+				out[i][j] = list.get(i)[j];
+			}
+		}
+		return out;
+	}
+	public static List<Double[]> getDoubleList2D(double[][] list) {
+		List<Double[]> out = new ArrayList<Double[]>();
+		for (int i = 0; i < list.length; i++) {
+			Double[] temp = new Double[list[i].length];
+			for (int j = 0; j < temp.length; j++) {
+				temp[j] = list[i][j];
+			}
+			out.add(temp);
+		}
+		return out;
+	}
 	/**
 	 * Writes the following {@link List}s to a CSV file.
 	 * 

@@ -29,14 +29,18 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import scadlib.paths.Util;
 
 /**
  * This class is a basic plotting class using the Java AWT interface. It has basic features which allow the user 
@@ -103,6 +107,7 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     private int rightIndex = -1;
     
     private JSlider slider;
+    private PathData pathData;
     
 
     /**
@@ -207,16 +212,21 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
          
         menu(g,this);	
     }
-    public GoodGraphing(double[][] leftData, double[][] centerData, double[][] rightData, Color leftColor, Color centerColor, Color rightColor) {
+    public GoodGraphing(double[][] leftData, double[][] centerData, double[][] rightData, double[][] nodeData, Color leftColor, Color centerColor, Color rightColor) {
     	this(getXVector(leftData), getYVector(leftData), leftColor, null);
     	addData(centerData, centerColor);
     	addData(rightData, rightColor);
+    	addData(nodeData, Color.black);
     	
     	slider.setMaximum(centerData.length);
     	
     	leftIndex = 0;
     	centerIndex = 1;
     	rightIndex = 2;
+    }
+    public GoodGraphing(PathData pd) {
+    	this(pd.path.leftPath, pd.path.smoothPath, pd.path.rightPath, pd.path.nodeOnlyPath, pd.lColor, pd.cColor, pd.rColor);
+    	pathData = pd;
     }
     
     /**
@@ -293,6 +303,44 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     		
     	}
     	link.add(Data);
+    }
+    public void addData(int location, double[] x, double[] y, Color lineColor, Color marker)
+    { 	
+    	xyNode Data = new xyNode();
+    	    	
+    	//copy y array into node
+    	Data.y = new double[y.length];
+    	Data.lineColor = lineColor;
+    	
+    	if(marker == null)
+    		Data.lineMarker = false;
+    	else
+    	{
+    		Data.lineMarker = true;
+    		Data.markerColor = marker;
+    	}
+    	for(int i=0; i<y.length; i++)
+    		Data.y[i] = y[i];
+    	
+    	//if X is not null, copy x
+    	if(x != null)
+    	{
+        	//cant add x, and y data unless all other data has x and y data
+        	
+        	for(xyNode data: link)
+        		if(data.x == null)
+        			throw new Error ("All previous chart series need to have both X and Y data arrays");
+    		
+    		if(x.length != y.length)
+    			throw new Error("X dimension must match Y dimension");
+    		
+    		Data.x = new double[x.length];
+    		
+    		for(int i=0; i<x.length; i++)
+        		Data.x[i] = x[i];
+    		
+    	}
+    	link.add(location, Data);
     }
  
     /**
@@ -417,10 +465,11 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     
     public void drawTime(int time, Graphics2D g2) {
 //    	paintComponent(g2);
+    	super.paintComponent(g2);
     	int w = getWidth();
         int h = getHeight();
         
-        g2.clearRect(0, 0, w, h);
+//        g2.clearRect(0, 0, w, h);
         
         Line2D yaxis = new Line2D.Double(xPAD, yPAD, xPAD, h-yPAD);
         Line2D.Double xaxis = new Line2D.Double(xPAD, h-yPAD, w-xPAD, h-yPAD);
@@ -809,6 +858,57 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
 		return temp;		
 	}
 	
+	private double[] convertToRealSpace(double xPixel, double yPixel) {
+		double w = getWidth();
+		double h = getHeight();
+		
+		double xScale = (double)(w - 2*xPAD)/(upperXtic-lowerXtic);
+        double yScale = (double)(h - 2*yPAD)/(upperYtic-lowerYtic);
+		
+        // xPixel = xPAD + xScale*REALVALUE + lowerXtic * xScale;
+        // yPixel = h - yPAD - yScale*REALVALUE + lowerYtic * yScale;
+        double realX = ((double)xPixel - xPAD - lowerXtic * xScale) / xScale;
+        double realY = ((double)yPixel - h + yPAD - lowerYtic * yScale) / -yScale;
+        return new double[]{realX, realY};
+	}
+	private double[] convertMouseToRealSpace(double xPixel, double yPixel) {
+		double xOffset = -8;
+		double yOffset = -30;
+		return convertToRealSpace(xPixel+xOffset, yPixel+yOffset);
+	}
+	private double[] convertToVirtualSpace(double realX, double realY) {
+		double w = getWidth();
+		double h = getHeight();
+		
+		double xScale = (double)(w - 2*xPAD)/(upperXtic-lowerXtic);
+        double yScale = (double)(h - 2*yPAD)/(upperYtic-lowerYtic);
+		
+        double xPixel = xPAD + xScale*realX + lowerXtic * xScale;
+        double yPixel = h - yPAD - yScale*realY + lowerYtic * yScale;
+        return new double[]{xPixel, yPixel};
+	}
+	private void updatePathData() {
+		System.out.println("\n\n\n\n=======================");
+		
+		int length = 4; // Remove first 3! (left, center, right, nodePath)
+		for (int i = 0; i < length; i++) {
+			link.removeFirst();
+		}
+		System.out.println("double[][] arr = new double[][]{");
+		for (int i = 0; i < pathData.waypoints.length; i++) {
+			System.out.println("\t{"+pathData.waypoints[i][0]+", "+pathData.waypoints[i][1]+"},");
+		}
+		System.out.println("};");
+		// Cleared array, now add new data
+		addData(0, getXVector(pathData.path.nodeOnlyPath), getYVector(pathData.path.nodeOnlyPath), Color.black, null);
+		addData(0, getXVector(pathData.path.rightPath), getYVector(pathData.path.rightPath), pathData.rColor, null);
+		addData(0, getXVector(pathData.path.smoothPath), getYVector(pathData.path.smoothPath), pathData.cColor, pathData.cColor);
+		addData(0, getXVector(pathData.path.leftPath), getYVector(pathData.path.leftPath), pathData.lColor, null);
+//		link.add(0, new xyNode(getXVector(pathData.path.rightPath), getYVector(pathData.path.rightPath), pathData.rColor, false));
+//		link.add(0, new xyNode(getXVector(pathData.path.smoothPath), getYVector(pathData.path.smoothPath), pathData.cColor, true));
+//		link.add(0, new xyNode(getXVector(pathData.path.leftPath), getYVector(pathData.path.leftPath), pathData.lColor, false));
+	}
+	
 	/**********Class for Linked List************/
     private class xyNode
     {
@@ -825,6 +925,12 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     		y=null;
     		
     		lineMarker = false;
+    	}
+    	public xyNode(double[] x, double[] y, Color markerColor, boolean lineMarker) {
+    		this.x = x;
+    		this.y = y;
+    		this.markerColor = markerColor;
+    		this.lineMarker = lineMarker;
     	}
     }
 	
@@ -889,20 +995,124 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     }
 
     class PopupTriggerListener extends MouseAdapter {
+    	
+    	int holdingIndex = -1;
+    	boolean didSelect = false;
+    	private final double buffer = 5;
+    	
     	public void mousePressed(MouseEvent ev) {
     		if (ev.isPopupTrigger()) {
     			menu.show(ev.getComponent(), ev.getX(), ev.getY());
+    		} if (ev.getButton() == MouseEvent.BUTTON3 && pathData != null) {
+    			int index = getClosestWaypointIndex(buffer, convertMouseToRealSpace(ev.getX(), ev.getY()));
+    			if (index != -1) {
+    				// There is a waypoint here! remove it.
+    				int writeInd = 0;
+    				int readInd = 0;
+    				System.out.println("Removing waypoint at index: "+index+" real coordinates: ("+pathData.waypoints[index][0]+", "+pathData.waypoints[index][1]+")");
+    				double[][] temp = new double[pathData.waypoints.length-1][2];
+    				while (writeInd < temp.length) {
+    					if (readInd == index) {
+    						readInd++;
+    					}
+    					temp[writeInd][0] = pathData.waypoints[readInd][0];
+    					temp[writeInd][1] = pathData.waypoints[readInd][1];
+    					writeInd++;
+    					readInd++;
+    				}
+    					
+    				System.out.println(temp.length);
+    				System.out.println(pathData.waypoints.length);
+    				
+					pathData.waypoints = temp;
+					pathData.recalculate();
+					
+					updatePathData();
+					
+					leftIndex = 0;
+	    			centerIndex = 1;
+	    			rightIndex = 2;
+	    			drawTime(0, (Graphics2D)getGraphics());
+	    			holdingIndex = -1;
+	    			didSelect = true;
+    			}
     		}
     	}
 
     	public void mouseReleased(MouseEvent ev) {
     		if (ev.isPopupTrigger()) {
     			menu.show(ev.getComponent(), ev.getX(), ev.getY());
+    		} else if (ev.getButton() == MouseEvent.BUTTON1 && holdingIndex != -1 && pathData != null) {
+    			double[] realCoords = convertMouseToRealSpace(ev.getX(), ev.getY());
+    			System.out.println("Dropped waypoint with index: "+holdingIndex+" at real coordinate space: ("+realCoords[0]+", "+realCoords[1]+")");
+    			pathData.waypoints[holdingIndex][0] = realCoords[0];
+    			pathData.waypoints[holdingIndex][1] = realCoords[1];
+    			
+    			pathData.recalculate();
+//    			plot((Graphics2D)getGraphics());
+    			
+    			updatePathData();
+    			
+    			leftIndex = 0;
+    			centerIndex = 1;
+    			rightIndex = 2;
+    			drawTime(0, (Graphics2D)getGraphics());
+    			holdingIndex = -1;
+    			didSelect = true;
     		}
     	}
 
     	public void mouseClicked(MouseEvent ev) {
+    		// Add a point to the waypoints array. Allow user to input index.
+    		if (ev.getButton() == MouseEvent.BUTTON1 && ev.isShiftDown() && pathData != null && !didSelect) {
+    			int index = -1;
+    			while (index < 0) {
+    				try {
+    					index = Integer.parseInt(JOptionPane.showInputDialog("Please enter an index of where the point should be located.\nValid range: 0-infinity"));
+    				} catch (Exception e) {
+    					// do nothing
+    				}
+    			}
+    			double[] tempS = convertMouseToRealSpace(ev.getX(), ev.getY());
+    	        
+    			Double[] temp = new Double[]{tempS[0], tempS[1]};
+    			List<Double[]> list = Util.getDoubleList2D(pathData.waypoints);
+    			System.out.println("L1"+list);
+    			if (index > list.size()) {
+    				index = list.size();
+    			}
+    			list.add(index, temp);
+    			System.out.println("L2"+list);
+    			pathData.waypoints = Util.getDoubleArr2D(list);
+    			pathData.recalculate();
+    			
+    			updatePathData();
+    			
+    			leftIndex = 0;
+    			centerIndex = 1;
+    			rightIndex = 2;
+    			drawTime(0, (Graphics2D)getGraphics());
+    		} else if (ev.getButton() == MouseEvent.BUTTON1 && pathData != null && !didSelect) {
+    			// Need to check to see if mouse is within a reasonable range of the waypoints.
+    			// Then: need to lift the point, make it clear it is moving, and release it when it lands.
+    			System.out.print("Picking up point at pixel coordinates: ("+ev.getX()+", "+ev.getY()+")");
+    			double[] realCoords = convertMouseToRealSpace(ev.getX(), ev.getY());
+    			System.out.println(" Real coordinates: ("+realCoords[0]+", "+realCoords[1]+")");
+    			holdingIndex = getClosestWaypointIndex(buffer, realCoords);
+    		}
+    		didSelect = false;
+    	}
+    	private final int getClosestWaypointIndex(double buffer, double... realCoords) {
 
+			for (int i = 0; i < pathData.waypoints.length; i++) {
+				double[][] wp = pathData.waypoints;
+				if (wp[i][0] - buffer < realCoords[0] && wp[i][0] + buffer > realCoords[0] && wp[i][1] + buffer > realCoords[1] && wp[i][1] - buffer < realCoords[1]) {
+//					holdingIndex = i;
+					System.out.println("Picked up point at index: "+holdingIndex+" with real-space coordinates: ("+wp[i][0]+", "+wp[i][1]+")");
+					return i;
+				}
+			}
+			return -1;
     	}
     }
 
