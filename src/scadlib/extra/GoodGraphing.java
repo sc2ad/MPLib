@@ -1009,7 +1009,8 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
     	public void mousePressed(MouseEvent ev) {
     		if (ev.isPopupTrigger()) {
     			menu.show(ev.getComponent(), ev.getX(), ev.getY());
-    		} if (ev.getButton() == MouseEvent.BUTTON3 && pathData != null) {
+    		} 
+    		if (ev.getButton() == MouseEvent.BUTTON3 && pathData != null && holdingIndex == -1) {
     			int index = getClosestWaypointIndex(buffer, convertMouseToRealSpace(ev.getX(), ev.getY()));
     			if (index != -1) {
     				// There is a waypoint here! remove it.
@@ -1042,6 +1043,38 @@ public class GoodGraphing extends JPanel implements ClipboardOwner{
 	    			holdingIndex = -1;
 	    			didSelect = true;
     			}
+    		} else if (ev.getButton() == MouseEvent.BUTTON3 && pathData != null && holdingIndex != -1) {
+    			double oldX = pathData.waypoints[holdingIndex][0];
+				double oldY = pathData.waypoints[holdingIndex][1];
+    			double realX = Double.NaN;
+    			double realY = Double.NaN;
+    			while (Double.isNaN(realX)) {
+    				try {
+    					realX = Double.parseDouble(JOptionPane.showInputDialog("Please enter the new real x coordinate for waypoint index "+holdingIndex+" at: ("+oldX+", "+oldY+")"));
+    				} catch (NullPointerException e) {
+    					return;
+    				} catch (Exception e) {
+    					// do nothing
+    				}
+    			}
+    			while (Double.isNaN(realY)) {
+    				try {
+    					realY = Double.parseDouble(JOptionPane.showInputDialog("Please enter the new real y coordinate for waypoint index "+holdingIndex+" at: ("+oldX+", "+oldY+")"));
+    				} catch (NullPointerException e) {
+    					return;
+    				} catch (Exception e) {
+    					// do nothing
+    				}
+    			}
+    			
+    			pathData.waypoints[holdingIndex][0] = realX;
+    			pathData.waypoints[holdingIndex][1] = realY;
+    			
+    			pathData.recalculate();
+    			updatePathData();
+    			drawTime(0, (Graphics2D)getGraphics());
+    			holdingIndex = -1;
+    			didSelect = true;
     		}
     	}
 
