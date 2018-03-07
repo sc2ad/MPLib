@@ -9,9 +9,9 @@ public class PathPlanner {
 	private MotionPath centerProfile;
 	
 	private double[][] smoothVelocities;
-	private double[] leftSmoothVelocities;
-	private double[] rightSmoothVelocities;
-	private double[] centerVelocities;
+	private double[][] leftSmoothVelocities;
+	private double[][] rightSmoothVelocities;
+	private double[][] centerVelocities;
 	private double[][] centerPath;
 	private double[][] leftPath;
 	private double[][] rightPath;
@@ -59,11 +59,11 @@ public class PathPlanner {
 		if (smoothVelocities == null) {
 			getCenterProfile(maxV, maxA);
 			double splineDT = path.seconds * dt / centerProfile.getTotalTime();
-			int length = (int)(path.seconds / splineDT);
+			int length = (int)(path.seconds / splineDT)+1;
 			smoothVelocities = new double[length][2];
-			leftSmoothVelocities = new double[length];
-			rightSmoothVelocities = new double[length];
-			centerVelocities = new double[length];
+			leftSmoothVelocities = new double[length][2];
+			rightSmoothVelocities = new double[length][2];
+			centerVelocities = new double[length][2];
 			leftPath = new double[length][2];
 			rightPath = new double[length][2];
 			centerPath = new double[length][2];
@@ -87,11 +87,17 @@ public class PathPlanner {
 				
 				double left = centerProfile.getSpeed(i * dt) + path.getOmega(splineDT * i) * width / 2;
 				double right = centerProfile.getSpeed(i * dt) - path.getOmega(splineDT * i) * width / 2;
-				centerVelocities[i] = centerProfile.getSpeed(i * dt);
+				
+				double seconds = i * dt;
+				
+				centerVelocities[i][0] = seconds;
+				centerVelocities[i][1] = centerProfile.getSpeed(i * dt);
 				smoothVelocities[i][0] = left;
 				smoothVelocities[i][1] = right;
-				leftSmoothVelocities[i] = left;
-				rightSmoothVelocities[i] = right;
+				leftSmoothVelocities[i][0] = seconds;
+				leftSmoothVelocities[i][1] = left;
+				rightSmoothVelocities[i][0] = seconds;
+				rightSmoothVelocities[i][1] = right;
 				
 				heading = path.getHeading(splineDT * i);
 //				leftX += left * Math.cos(heading) * dt;
@@ -108,13 +114,13 @@ public class PathPlanner {
 		}
 		return smoothVelocities;
 	}
-	public double[] getCenterVelocities() {
+	public double[][] getCenterVelocities() {
 		return centerVelocities;
 	}
-	public double[] getLeftSmoothVelocities() {
+	public double[][] getLeftSmoothVelocities() {
 		return leftSmoothVelocities;
 	}
-	public double[] getRightSmoothVelocities() {
+	public double[][] getRightSmoothVelocities() {
 		return rightSmoothVelocities;
 	}
 	public double[][] getCenterPath() {

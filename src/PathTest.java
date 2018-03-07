@@ -131,14 +131,20 @@ public class PathTest {
 			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, displacementV, 0, 0, 0),
 		};
 		
-		Spline[] xyspl = Spline.interpolateQuintic(leftPath);
+		Point[] points = new Point[]{
+			new Point(robotLength/2, height/2, 10, 10, 90),
+			new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 10, 60),
+			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, 10, 10, 90),
+		};
+		
+		Spline[] xyspl = Spline.interpolateQuintic(points);
 		
 		Trajectory frcPathTraj = new Trajectory(Samples.LOW, xyspl);
 		PathPlanner pather = new PathPlanner(frcPathTraj, robotWidth);
 		
-		pather.calculateSmoothVelocities(10, 10, 0.02);
+		pather.calculateSmoothVelocities(100, 500, 0.02);
 
-		GoodGraphing figure = new GoodGraphing(pather.getCenterPath(), null, Color.blue);
+		GoodGraphing figure = new GoodGraphing(pather.getCenterPath(), Color.blue, Color.blue);
 		figure.setXTic(0, width, 10);
 		figure.setYTic(0, height, 10);
 		figure.setXLabel("Field width (inches)");
@@ -149,7 +155,7 @@ public class PathTest {
 		figure.addData(pather.getLeftPath(), Color.red);
 		figure.addData(pather.getRightPath(), Color.green);
 		
-		GoodGraphing velFigure = new GoodGraphing(pather.getCenterVelocities(), Color.blue, null);
+		GoodGraphing velFigure = new GoodGraphing(pather.getCenterVelocities(), Color.blue, Color.blue);
 		velFigure.setTitle("Velocity profile\nCenter = blue\nLeft = red\nRight = green");
 		velFigure.setXLabel("Time (s)");
 		velFigure.setYLabel("Magnitude (inches / second)");
