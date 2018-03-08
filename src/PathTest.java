@@ -28,6 +28,125 @@ import util.Util;
  *
  */
 public class PathTest {
+	static double fieldW = 648;
+	static double fieldH = 324.5;
+	private static double[][] makeSwitch(int switchNum) {
+		double height = 324.5;
+		double switchLength = 38.719;
+		double distanceToSwitchFromWall = 85.25;
+		double distanceToSwitchFromAlliance = 140;
+		double widthOfSwitch = 56;
+		if (switchNum <= 0) {
+			return new double[][]{
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+				{distanceToSwitchFromAlliance, height-distanceToSwitchFromWall-switchLength}, // 200.5
+				{distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+				{distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall},
+				{distanceToSwitchFromAlliance, distanceToSwitchFromWall}
+			};
+		}
+		return new double[][]{
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance, height-distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+			{fieldW-distanceToSwitchFromAlliance, height-distanceToSwitchFromWall-switchLength}, // 200.5
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, height-distanceToSwitchFromWall-switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall+switchLength},
+			{fieldW-distanceToSwitchFromAlliance+widthOfSwitch, distanceToSwitchFromWall},
+			{fieldW-distanceToSwitchFromAlliance, distanceToSwitchFromWall}
+		};
+	}
+	private static double[][] makePlatform() {
+		double distanceToEdgeofPlatform = 261.47;
+		double distanceToPlatformFromWall = 95.25;
+		return new double[][]{
+			{distanceToEdgeofPlatform, distanceToPlatformFromWall},
+			{distanceToEdgeofPlatform, fieldH-distanceToPlatformFromWall},
+			{fieldW-distanceToEdgeofPlatform, fieldH-distanceToPlatformFromWall},
+			{fieldW-distanceToEdgeofPlatform, distanceToPlatformFromWall},
+			{distanceToEdgeofPlatform, distanceToPlatformFromWall}
+		};
+	}
+	private static double[][] makeNullzones(int upperOrLower) {
+		double distanceToEdgeX = 288;
+		double distanceToEdgeY = 95.25;
+		if (upperOrLower <= 0) {
+			return new double[][]{
+				{distanceToEdgeX, fieldH},
+				{fieldW-distanceToEdgeX, fieldH},
+				{fieldW-distanceToEdgeX, fieldH-distanceToEdgeY},
+				{distanceToEdgeX, fieldH-distanceToEdgeY},
+				{distanceToEdgeX, fieldH}
+			};
+		}
+		return new double[][]{
+			{distanceToEdgeX, distanceToEdgeY},
+			{fieldW-distanceToEdgeX, distanceToEdgeY},
+			{fieldW-distanceToEdgeX, 0},
+			{distanceToEdgeX, 0},
+			{distanceToEdgeX, distanceToEdgeY}
+		};
+	}
+	private static double[][] makeScale() {
+		double distanceX = 299.65;
+		double distanceY = 71.57;
+		double scalePlatformLength = 36;
+		return new double[][]{
+			{distanceX, distanceY},
+			{distanceX, fieldH-distanceY},
+			{fieldW-distanceX, fieldH-distanceY},
+			{fieldW-distanceX, fieldH-distanceY-scalePlatformLength},
+			{distanceX, fieldH-distanceY-scalePlatformLength},
+			{fieldW-distanceX, fieldH-distanceY-scalePlatformLength},
+			{fieldW-distanceX, distanceY+scalePlatformLength},
+			{distanceX, distanceY+scalePlatformLength},
+			{fieldW-distanceX, distanceY+scalePlatformLength},
+			{fieldW-distanceX, distanceY},
+			{distanceX, distanceY}
+		};
+	}
+	private static double[][] makePortals() {
+		double portalX = 36;
+		double portalY = 29.69;
+		return new double[][]{
+			{0, fieldH-portalY},
+			{portalX, fieldH},
+			{fieldW-portalX, fieldH},
+			{fieldW, fieldH-portalY},
+			{fieldW, portalY},
+			{fieldW-portalX, 0},
+			{portalX, 0},
+			{0, portalY}
+		};
+	}
+	private static double[][] makeExchanges(int exchangeNumber) {
+		double portalY = 29.69;
+		double exchangeDistance = 6 * 12 + portalY;
+		if (exchangeNumber == 0) {
+			return new double[][]{
+				{0, fieldH-exchangeDistance},
+				{5, fieldH-exchangeDistance},
+				{5, fieldH-exchangeDistance-4*12},
+				{0, fieldH-exchangeDistance-4*12}
+			};
+		} else {
+			return new double[][]{
+				{fieldW, exchangeDistance},
+				{fieldW-5, exchangeDistance},
+				{fieldW-5, exchangeDistance+4*12},
+				{fieldW, exchangeDistance+4*12}
+			};
+		}
+	}
 	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
 		// ALL OF THESE LINES CAN HAVE A SIMPLIFIED TYPE OF MotionPath
