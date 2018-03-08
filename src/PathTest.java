@@ -268,21 +268,24 @@ public class PathTest {
 		};
 		
 		double[][] leftScaleStart = new double[][]{
-			{robotLength/2, height-portalY-robotWidth/2},
-			{distanceToSwitchFromAlliance+switchLength+robotLength/2-40,height-portalY-robotWidth/2},
-			{distanceToScaleFromAlliance-robotLength/2-40, height-portalY-robotWidth/2},
-			{324-3, height-portalY-robotWidth/2+3},
-			{324, height-portalY-robotWidth/2-5},
-			{324, height-72-5+robotLength/2},
+			{18.625, 281.935},
+			{34.0, 281.935},
+			{131.8191780821918, 287.5034340659341},
+			{225.0246575342466, 290.17788461538464},
+			{309.3534246575343, 295.5267857142857},
+			{319.11780821917813, 286.61195054945057},
+			{324.0, 272.0},
+			{324.0, 266.125},
 		};
 		
 		double[][] rightScaleStart = new double[][]{
 			{18.625, 42.565},
 			{40.0, 42.565},
-			{300.4767123287672, 36.105082417582416},
-			{314.6794520547945, 42.345467032967036},
-			{320.8931506849315, 48.58585164835165},
-			{324.0, 57.0},
+			{121.16712328767125, 33.43063186813187},
+			{221.47397260273974, 29.864697802197803},
+			{307.5780821917808, 30.756181318681318},
+			{318.2301369863014, 39.67101648351648},
+			{324.0, 52.0},
 			{324.0, 58.375},
 		};
 		
@@ -310,9 +313,10 @@ public class PathTest {
 		double cubeYdisp = 20;
 		
 		double[][] leftScaleGrabCube = new double[][]{
-			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+25},
-			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta+22},
-			{distanceToScaleFromAlliance-robotLength/2-backUpTurnPoint-xDistanceToCube, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta-cubeYdisp},
+			{226.02499999999998, 267.93},
+			{226.02499999999998, 264.93},
+			{217.92328767123288, 245.6037087912088},
+			{207.27123287671236, 237.58035714285714},
 		};
 		
 		double[][] rightScaleStartNew = new double[][]{
@@ -389,8 +393,8 @@ public class PathTest {
 //		makeGraph(width, height, true, getPaths(leftSwitchStartDataNew));
 //		makeGraph(width, height, true, getPaths(rightSwitchStartDataNew));
 		
-//		makeGraph(width, height, false, getPaths(leftScaleStartData));
-//		makeGraph(width, height, false, getPaths(rightScaleStartData));
+		makeGraph(width, height, true, leftScaleStartData);
+		makeGraph(width, height, true, rightScaleStartData);
 		
 //		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
 //		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
@@ -406,7 +410,7 @@ public class PathTest {
 		
 		
 		
-		makeGraph(width, height, true, rightScaleStartData);
+//		makeGraph(width, height, true, rightScaleStartData);
 //		makeGraph(width, height, true, right2CubeScaleStartData[1]);
 		
 	}
