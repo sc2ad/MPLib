@@ -17,6 +17,8 @@ public class PathPlanner {
 	private double[][] rightPath;
 	private double[] headings;
 	private double[] omegas;
+	private double[] leftArclength;
+	private double[] rightArclength;
 	
 	public PathPlanner(Trajectory p, double w) {
 		path=p;
@@ -137,5 +139,31 @@ public class PathPlanner {
 	}
 	public double[] getOmegas() {
 		return omegas;
+	}
+	public double[] getLeftArclength() {
+		if (leftArclength == null) {
+			double leftArclengthSum = 0;
+			leftArclength = new double[leftPath.length];
+			leftArclength[0] = 0;
+			for (int i = 1; i < leftPath.length; i++) {
+				leftArclengthSum += Math.sqrt(Math.pow(leftPath[i][1] - leftPath[i-1][1], 2) + Math.pow(leftPath[i][0] - leftPath[i-1][0], 2));
+				leftArclength[i] = leftArclengthSum;
+			}
+			return leftArclength;
+		}
+		return leftArclength;
+	}
+	public double[] getRightArclength() {
+		if (rightArclength == null) {
+			double rightArclengthSum = 0;
+			rightArclength = new double[rightPath.length];
+			rightArclength[0] = 0;
+			for (int i = 1; i < rightPath.length; i++) {
+				rightArclengthSum += Math.sqrt(Math.pow(rightPath[i][1] - rightPath[i-1][1], 2) + Math.pow(rightPath[i][0] - rightPath[i-1][0], 2));
+				rightArclength[i] = rightArclengthSum;
+			}
+			return rightArclength;
+		}
+		return rightArclength;
 	}
 }

@@ -252,8 +252,8 @@ public class PathTest {
 		
 		Point[] points = new Point[]{
 			new Point(robotLength/2, height/2, 10, 10, 90),
-			new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 10, 60),
-			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, 10, 10, 90),
+			new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 1, 60),
+			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, 100, 100, 90),
 		};
 		
 		Spline[] xyspl = Spline.interpolateQuintic(points);
@@ -261,9 +261,27 @@ public class PathTest {
 		Trajectory frcPathTraj = new Trajectory(Samples.LOW, xyspl);
 		PathPlanner pather = new PathPlanner(frcPathTraj, robotWidth);
 		
-		pather.calculateSmoothVelocities(100, 500, 0.02);
+		pather.calculateSmoothVelocities(100, 200, 0.02);
+		
+		System.out.println(pather.getLeftArclength());
+		System.out.println(pather.getRightArclength());
 
 		GoodGraphing figure = new GoodGraphing(pather.getCenterPath(), Color.blue, Color.blue);
+		figure.addData(makeSwitch(0), Color.black);
+		figure.addData(makeScale(), Color.black);
+		figure.addData(makeExchanges(0), Color.black);
+		figure.addData(makePlatform(), Color.black);
+		figure.addData(makePortals(), Color.black);
+		figure.addData(makeSwitch(1), Color.black);
+		figure.addData(makeExchanges(1), Color.black);
+		
+		double[][] temp = new double[points.length][2];
+		for (int i = 0; i < points.length; i++) {
+			temp[i][0] = points[i].x;
+			temp[i][1] = points[i].y;
+		}
+		figure.addData(temp, Color.black, Color.black);
+		
 		figure.setXTic(0, width, 10);
 		figure.setYTic(0, height, 10);
 		figure.setXLabel("Field width (inches)");
