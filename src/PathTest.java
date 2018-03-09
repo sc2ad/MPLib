@@ -344,8 +344,8 @@ public class PathTest {
 		PathData leftSwitchStartDataNew = new PathData(leftSwitchStartNew, 5, 0.02, robotWidth);
 		PathData rightSwitchStartDataNew = new PathData(rightSwitchStartNew, 5, 0.02, robotWidth);
 		
-		PathData leftSwitchStartData = new PathData(leftSwitchStart, 5, 0.02, robotWidth);
-		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5, 0.02, robotWidth);
+		PathData leftSwitchStartData = new PathData(leftSwitchStart, 5.8, 0.02, robotWidth);
+		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5.8, 0.02, robotWidth);
 		
 		PathData leftScaleStartData = new PathData(leftScaleStart, 8, 0.02, robotWidth);
 		PathData rightScaleStartData = new PathData(rightScaleStart, 8, 0.02, robotWidth);
@@ -387,14 +387,14 @@ public class PathTest {
 			new PathData(rightReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(rightTurnToSwitch, 2, 0.02, robotWidth)
 		};
-//		makeGraph(width, height, true, getPaths(leftSwitchStartData));
-//		makeGraph(width, height, true, getPaths(rightSwitchStartData));
-//		// New data seems more reasonable in terms of speed, but has a negative velocity at some point
+		makeGraph(width, height, true, leftSwitchStartData);
+		makeGraph(width, height, true, rightSwitchStartData);
+		// New data seems more reasonable in terms of speed, but has a negative velocity at some point
 //		makeGraph(width, height, true, getPaths(leftSwitchStartDataNew));
 //		makeGraph(width, height, true, getPaths(rightSwitchStartDataNew));
 		
-		makeGraph(width, height, true, leftScaleStartData);
-		makeGraph(width, height, true, rightScaleStartData);
+//		makeGraph(width, height, true, leftScaleStartData);
+//		makeGraph(width, height, true, rightScaleStartData);
 		
 //		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
 //		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
