@@ -374,21 +374,21 @@ public class PathTest {
 		
 		PathData[] left2CubePathArrays = new PathData[]{
 			new PathData(leftPath, 3.2, 0.02, robotWidth),
-			new PathData(leftTurnBack, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(leftTurnBack, .75, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(leftGrabCube, 1, 0.02, robotWidth),
 			new PathData(leftReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
-			new PathData(leftTurnToSwitch, 2, 0.02, robotWidth)
+			new PathData(leftTurnToSwitch, .75, 0.02, robotWidth)
 		};
 		
 		PathData[] right2CubePathArrays = new PathData[]{
 			new PathData(rightPath, 3.2, 0.02, robotWidth), 
-			new PathData(rightTurnBack, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE), 
+			new PathData(rightTurnBack, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE), 
 			new PathData(rightGrabCube, 1, 0.02, robotWidth), 
 			new PathData(rightReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
-			new PathData(rightTurnToSwitch, 2, 0.02, robotWidth)
+			new PathData(rightTurnToSwitch, 1, 0.02, robotWidth)
 		};
-		makeGraph(width, height, true, leftSwitchStartData);
-		makeGraph(width, height, true, rightSwitchStartData);
+//		makeGraph(width, height, true, leftSwitchStartData);
+//		makeGraph(width, height, true, rightSwitchStartData);
 		// New data seems more reasonable in terms of speed, but has a negative velocity at some point
 //		makeGraph(width, height, true, getPaths(leftSwitchStartDataNew));
 //		makeGraph(width, height, true, getPaths(rightSwitchStartDataNew));
@@ -396,21 +396,22 @@ public class PathTest {
 //		makeGraph(width, height, true, leftScaleStartData);
 //		makeGraph(width, height, true, rightScaleStartData);
 		
-//		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
-//		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
+		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
+		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
 		
 //		makeGraph(width, height, true, getPaths(left2CubeScaleStartData));
 //		makeGraph(width, height, true, getPaths(right2CubeScaleStartData));
 //		makeGraph(width, height, true, getPaths(right2CubeScaleStartData[1]));
 		
-//		makeGraph(width, height, false, getPaths(right2CubePathArrays));
-//		makeGraph(width, height, false, getPaths(left2CubePathArrays));
+//		makeGraph(width, height, true, getPaths(right2CubePathArrays));
+//		makeGraph(width, height, true, getPaths(left2CubePathArrays));
 //		makeGraph(width, height, false, getPaths(rightPathData));
 //		makeGraph(width, height, false, getPaths(leftPathData));
 		
+//		makeGraph(width, height, true, left2CubePathArrays[1]);
+//		makeGraph(width, height, true, leftSwitchStartData);
 		
-		
-//		makeGraph(width, height, true, rightScaleStartData);
+//		makeGraph(width, height, true, leftScaleStartData);
 //		makeGraph(width, height, true, right2CubeScaleStartData[1]);
 		
 	}
