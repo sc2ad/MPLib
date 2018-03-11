@@ -15,8 +15,8 @@ public class PathPlanner {
 	private double[][] centerPath;
 	private double[][] leftPath;
 	private double[][] rightPath;
-	private double[] headings;
-	private double[] omegas;
+	private double[][] headings;
+	private double[][] omegas;
 	private double[] leftArclength;
 	private double[] rightArclength;
 	
@@ -24,14 +24,6 @@ public class PathPlanner {
 		path=p;
 		width = w;
 		// This dt is in spline time!
-	}
-	public double[] getOmegas(double dt) {
-		// This is all in spline time
-		double[] omegas = new double[(int)(path.seconds / dt)];
-		for (int i = 0; i < omegas.length; i++) {
-			omegas[i] = path.getOmega((double)i * dt);
-		}
-		return omegas;
 	}
 	public double[][] calculateOmegaVelocities(double[] omegas) {
 		// Returns {{L0, R0}, {L1, R1}, ...}
@@ -48,6 +40,9 @@ public class PathPlanner {
 		}
 		return centerProfile;
 	}
+	public void setCenterProfile(MotionPath path) {
+		centerProfile = path;
+	}
 	public double[][] getLeftRightSmoothVelocities(MotionPath centerProfile, double[][] omegaVelocities) {
 		// This method has many problems if the path's velocity + the omega's velocity exceeds the physical max velocity
 		double totalTime = centerProfile.getTotalTime();
@@ -58,8 +53,10 @@ public class PathPlanner {
 		return null;
 	}
 	public double[][] calculateSmoothVelocities(double maxV, double maxA, double dt) {
-		if (smoothVelocities == null) {
+		if (centerProfile == null) {
 			getCenterProfile(maxV, maxA);
+		}
+		if (smoothVelocities == null) {
 			double splineDT = path.seconds * dt / centerProfile.getTotalTime();
 			int length = (int)(path.seconds / splineDT)+1;
 			smoothVelocities = new double[length][2];
@@ -69,13 +66,15 @@ public class PathPlanner {
 			leftPath = new double[length][2];
 			rightPath = new double[length][2];
 			centerPath = new double[length][2];
-			headings = new double[length];
-			omegas = new double[length];
+			headings = new double[length][2];
+			omegas = new double[length][2];
 			
 			double centerX = path.getX(0), centerY = path.getY(0);
 			double heading = path.getHeading(0);
 			double leftX = centerX - width / 2 * Math.sin(heading), leftY = centerY + width / 2 * Math.cos(heading);
 			double rightX = centerX + width / 2 * Math.sin(heading), rightY = centerY - width / 2 * Math.cos(heading);
+			
+			double lastHeading = path.getHeading(0);
 			
 			for (int i = 0; i < length; i++) {
 				leftPath[i][0] = leftX;
@@ -84,11 +83,26 @@ public class PathPlanner {
 				rightPath[i][1] = rightY;
 				centerPath[i][0] = centerX;
 				centerPath[i][1] = centerY;
-				headings[i] = heading;
-				omegas[i] = path.getOmega(splineDT * i);
+				headings[i][0] = i * dt;
+				headings[i][1] = heading;
 				
-				double left = centerProfile.getSpeed(i * dt) + path.getOmega(splineDT * i) * width / 2;
-				double right = centerProfile.getSpeed(i * dt) - path.getOmega(splineDT * i) * width / 2;
+				// Uses arclength to compute heading (annoying math)
+				heading = path.getHeadingFromArclength(centerProfile.getPosition(i * dt));
+				
+				centerX = path.getXFromArclength(centerProfile.getPosition(i * dt));
+				centerY = path.getYFromArclength(centerProfile.getPosition(i * dt));
+				
+				leftX = centerX - width / 2 * Math.sin(heading);
+				leftY = centerY + width / 2 * Math.cos(heading);
+				rightX = centerX + width / 2 * Math.sin(heading);
+				rightY = centerY - width / 2 * Math.cos(heading);
+				double omega = (heading - lastHeading) / dt;
+				omegas[i][0] = i * dt;
+				omegas[i][1] = omega;
+				
+				// getOmega also uses arclength!
+				double left = centerProfile.getSpeed(i * dt) - omega * width / 2;
+				double right = centerProfile.getSpeed(i * dt) + omega * width / 2;
 				
 				double seconds = i * dt;
 				
@@ -100,18 +114,7 @@ public class PathPlanner {
 				leftSmoothVelocities[i][1] = left;
 				rightSmoothVelocities[i][0] = seconds;
 				rightSmoothVelocities[i][1] = right;
-				
-				heading = path.getHeading(splineDT * i);
-//				leftX += left * Math.cos(heading) * dt;
-//				leftY += left * Math.sin(heading) * dt;
-//				rightX += right * Math.cos(heading) * dt;
-//				rightY += right * Math.sin(heading) * dt;
-				centerX += centerProfile.getSpeed(i * dt) * Math.cos(heading) * dt;
-				centerY += centerProfile.getSpeed(i * dt) * Math.sin(heading) * dt;
-				leftX = centerX - width / 2 * Math.sin(heading);
-				leftY = centerY + width / 2 * Math.cos(heading);
-				rightX = centerX + width / 2 * Math.sin(heading);
-				rightY = centerY - width / 2 * Math.cos(heading);
+				lastHeading = heading;
 			}
 		}
 		return smoothVelocities;
@@ -134,10 +137,10 @@ public class PathPlanner {
 	public double[][] getRightPath() {
 		return rightPath;
 	}
-	public double[] getHeadings() {
+	public double[][] getHeadings() {
 		return headings;
 	}
-	public double[] getOmegas() {
+	public double[][] getOmegas() {
 		return omegas;
 	}
 	public double[] getLeftArclength() {

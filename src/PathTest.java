@@ -15,7 +15,6 @@ import paths.MotionPath;
 import splines.PathPlanner;
 import splines.Point;
 import splines.Position;
-import splines.RobotPath;
 import splines.Samples;
 import splines.Spline;
 import splines.Trajectory;
@@ -250,47 +249,78 @@ public class PathTest {
 			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, displacementV, 0, 0, 0),
 		};
 		
-		Point[] points = new Point[]{
-			new Point(robotLength/2, height/2, 10, 10, 90),
-			new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 1, 60),
-			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, 100, 100, 90),
+		Point[] points0 = new Point[]{
+				new Point(robotLength/2, height/2, 10, 10, 90),
+				new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 1, 60),	
 		};
 		
+		Point[] points = new Point[]{
+//			new Point(robotLength/2, height/2, 10, 10, 90),
+			new Point((distanceToSwitchFromAlliance-robotLength)/2+delta-xDelta-20, height/2+5, 10, 1, 60),
+			new Point(distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta, 100, 0, 90),
+		};
+		Spline[] x0spl = Spline.interpolateQuintic(points0);
 		Spline[] xyspl = Spline.interpolateQuintic(points);
 		
-		Trajectory frcPathTraj = new Trajectory(Samples.LOW, xyspl);
-		PathPlanner pather = new PathPlanner(frcPathTraj, robotWidth);
 		
+		Trajectory frcPath0Traj = new Trajectory(Samples.LOW, x0spl);
+		Trajectory frcPathTraj = new Trajectory(Samples.LOW, xyspl);
+		Trajectory frcPathT2 = new Trajectory(Samples.LOW, frcPath0Traj, frcPathTraj);
+//		Trajectory frcPathT2 = new Trajectory(Samples.LOW, new Spline[]{new Spline(x0spl[0].x0,xyspl[0].x1,new Spline[]{x0spl[0], xyspl[0]}),new Spline(x0spl[1].x0,xyspl[1].x1,new Spline[]{x0spl[1], xyspl[1]})});
+		PathPlanner p0 = new PathPlanner(frcPath0Traj, robotWidth);
+		PathPlanner pather = new PathPlanner(frcPathTraj, robotWidth);
+		PathPlanner combined = new PathPlanner(frcPathT2, robotWidth);
+		
+		p0.calculateSmoothVelocities(100, 200, 0.02);
 		pather.calculateSmoothVelocities(100, 200, 0.02);
 		
-		System.out.println(pather.getLeftArclength());
-		System.out.println(pather.getRightArclength());
+//		double disp = frcPath0Traj.getArclength();
+//		// sqrt(2ax) = v
+//		double v = Math.sqrt(2*200*disp);
+//		if (v > 100) {
+//			v = 100.;
+//		}
+//		double t = v/200.;
+//		MotionPath accel = new LinearDerivativePath(0, v, 200);
+//		MotionPath two = new Hold(0, v);
+//		if (accel.getTotalDistance() < disp) {
+//			two = new Hold(t-accel.getTotalTime(), v);
+//		}
+//		
+//		firstCombined.setCenterProfile(new CombinedPath(0, accel, two));
+//		
+//		double disp2 = frcPathTraj.getArclength();
+//		MotionPath decel = new LinearDerivativePath(100, 0, -200);
+//		double tHold = (disp2 - decel.getTotalDistance()) / 100.;
+//		MotionPath s2 = new Hold(tHold, 100.);
+//		MotionPath s3 = new Hold(0, 100);
+//		if (v < 100.) {
+//			s2 = new LinearDerivativePath(v, 100, 200);
+//			s3 = new Hold((disp2 - decel.getTotalDistance() - s2.getTotalDistance()) / 100., 100.);
+//		}
+//		
+//		secondCombined.setCenterProfile(new CombinedPath(disp, s2, s3, decel));
+//		
+//		firstCombined.calculateSmoothVelocities(0, 0, 0.02);
+//		secondCombined.calculateSmoothVelocities(0, 0, 0.02);
+		
+		combined.calculateSmoothVelocities(1, 200, 0.02);
+		
+		display(p0);
+		display(pather);
+		display(combined);
+		
+//		System.out.println(pather.getLeftArclength());
+//		System.out.println(pather.getRightArclength());
 
-		GoodGraphing figure = new GoodGraphing(pather.getCenterPath(), Color.blue, Color.blue);
-		figure.addData(makeSwitch(0), Color.black);
-		figure.addData(makeScale(), Color.black);
-		figure.addData(makeExchanges(0), Color.black);
-		figure.addData(makePlatform(), Color.black);
-		figure.addData(makePortals(), Color.black);
-		figure.addData(makeSwitch(1), Color.black);
-		figure.addData(makeExchanges(1), Color.black);
+		GoodGraphing figure = makeField(width, height);
 		
-		double[][] temp = new double[points.length][2];
-		for (int i = 0; i < points.length; i++) {
-			temp[i][0] = points[i].x;
-			temp[i][1] = points[i].y;
-		}
-		figure.addData(temp, Color.black, Color.black);
+		addData(figure, p0, points0);
+		addData(figure, pather, points);
 		
-		figure.setXTic(0, width, 10);
-		figure.setYTic(0, height, 10);
-		figure.setXLabel("Field width (inches)");
-		figure.setYLabel("Field width (inches)");
-		figure.setTitle("Field with left and right paths\nCenter = blue\nLeft = red\nRight = green");
-		figure.xGridOn();
-		figure.yGridOn();
-		figure.addData(pather.getLeftPath(), Color.red);
-		figure.addData(pather.getRightPath(), Color.green);
+		GoodGraphing f2 = makeField(width, height);
+		
+		addData(f2, combined, points0);
 		
 		GoodGraphing velFigure = new GoodGraphing(pather.getCenterVelocities(), Color.blue, Color.blue);
 		velFigure.setTitle("Velocity profile\nCenter = blue\nLeft = red\nRight = green");
@@ -301,194 +331,81 @@ public class PathTest {
 		velFigure.addData(pather.getLeftSmoothVelocities(), Color.red);
 		velFigure.addData(pather.getRightSmoothVelocities(), Color.green);
 		
-		GoodGraphing heading = new GoodGraphing(pather.getOmegas(), Color.black, Color.black);
-		heading.addData(pather.getHeadings(), Color.red);
+		GoodGraphing heading = new GoodGraphing(new double[][]{{0,0}}, Color.black, Color.black);
 		heading.setTitle("Headings and Omegas\nHeadings = red\nOmegas = black");
 		heading.setXLabel("Time (s)");
 		heading.setYLabel("Radians or Radians / second");
 		heading.xGridOn();
 		heading.yGridOn();
+		addHeadings(heading, p0, pather);
 		
-//		try {
-//			double t = 0;
-//			List<Double> time = new ArrayList<Double>();
-//			List<Double> x = new ArrayList<Double>();
-//			List<Double> y = new ArrayList<Double>();
-//			List<Double> derivX = new ArrayList<Double>();
-//			List<Double> derivY = new ArrayList<Double>();
-//			List<Double> derivYX = new ArrayList<Double>();
-//			while (t <= xyspl[0].seconds) {
-//				double xx = xyspl[0].get(t);
-//				double yy = xyspl[1].get(t);
-//				time.add(t);
-//				x.add(xx);
-//				y.add(yy);
-//				derivX.add(xyspl[0].getDerivative(t));
-//				derivY.add(xyspl[1].getDerivative(t));
-//				derivYX.add(xyspl[1].getDerivative(t)/xyspl[0].getDerivative(t));
-//				System.out.println("xHat: "+xx+"\tyHat: "+yy);
-//				t += 0.01;
-//			}
-//			System.out.println("X:\n"+xyspl[0]);
-//			System.out.println("Y:\n"+xyspl[1]);
-//			System.out.println(xyspl[0].getArclength());
-//			System.out.println(xyspl[1].getArclength());
-//			derivYX.remove(0);
-//			derivYX.add(derivYX.get(derivYX.size()-1));
-//			viewGraph(x,y,leftPath);
-////			viewGraph(time,derivX);
-////			viewGraph(time,derivY);
-////			viewGraph(time,x);
-////			viewGraph(time,y);
-////			viewGraph(time,derivYX);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		Trajectory traj = new Trajectory(Samples.LOW, xyspl);
-//		List<Double> heading = new ArrayList<Double>();
-//		List<Double> curvature = new ArrayList<Double>();
-//		Position[][] poses = traj.getLeftRightPositions(22);
-//		List<Double> time = new ArrayList<Double>();
-//		List<Double> x = new ArrayList<Double>();
-//		List<Double> y = new ArrayList<Double>();
-//		List<Double> derivX = new ArrayList<Double>();
-//		List<Double> derivY = new ArrayList<Double>();
-//		List<Double> omegas = new ArrayList<Double>();
-//		Position[] left = poses[0];
-//		Position[] right = poses[1];
-//		try {
-//			
-//			double t = 0;
-//			while (t <= xyspl[0].seconds) {
-//				double xx = traj.getX(t);
-//				double yy = traj.getY(t);
-//				time.add(t);
-//				x.add(xx);
-//				y.add(yy);
-//				derivX.add(xyspl[0].getDerivative(t));
-//				derivY.add(xyspl[1].getDerivative(t));
-//				heading.add(traj.getHeading(t));
-//				curvature.add(traj.getCurvature(t));
-//				omegas.add(traj.getOmega(t));
-//				System.out.println("xHat: "+xx+"\tyHat: "+yy);
-//				t += 0.01;
-//			}
-//			System.out.println(traj.getLeftArclength());
-//			System.out.println(traj.getRightArclength());
-//			System.out.println(traj.getArclength());
-//			viewGraph(x, y, left, right);
-//			viewGraph(time, heading);
-////			viewGraph(time, curvature);
-////			viewGraph(time, derivX);
-////			viewGraph(time, derivY);
-//			viewGraph(time, omegas);
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		double DT = 0.02;
-//		RobotPath path = new RobotPath(traj, Util.getDoubleArr(heading), Util.getDoubleArr(curvature), DT);
-////		System.out.println("Max abs(curvature): "+path.getMaxCurvature());
-//		double v = 10, a = 10, omega = 50;
-//		double wheelRadius = 3;
-//		path.configWidth(width);
-//		path.configWheelRadius(wheelRadius);
-//		path.constructMainPath(v, a, omega);
-//		path.resetAccumulation();
-//		
-//		time = new ArrayList<Double>();
-//		List<Double> head = new ArrayList<Double>();
-//		List<Double> omeg = new ArrayList<Double>();
-////		List<Double> left = new ArrayList<Double>();
-////		List<Double> right = new ArrayList<Double>();
-////		List<Double> leftV = new ArrayList<Double>();
-////		List<Double> rightV = new ArrayList<Double>();
-////		List<Double> leftA = new ArrayList<Double>();
-////		List<Double> rightA = new ArrayList<Double>();
-////		List<Double> leftF = new ArrayList<Double>();
-////		List<Double> rightF = new ArrayList<Double>();
-//		List<Double> leftP = new ArrayList<Double>();
-//		List<Double> rightP = new ArrayList<Double>();
-//		List<Position> les = new ArrayList<Position>();
-//		List<Position> ris = new ArrayList<Position>();
-//		List<Double> lx = new ArrayList<Double>();
-//		List<Double> rx = new ArrayList<Double>();
-//		List<Double> ly = new ArrayList<Double>();
-//		List<Double> ry = new ArrayList<Double>();
-//		List<Double> la = new ArrayList<Double>();
-//		List<Double> ra = new ArrayList<Double>();
-//		List<Double> lw = new ArrayList<Double>();
-//		List<Double> rw = new ArrayList<Double>();
-//		List<Double> lv = new ArrayList<Double>();
-//		List<Double> rv = new ArrayList<Double>();
-//		
-////		List<Double> mx = new ArrayList<Double>();
-////		List<Double> my = new ArrayList<Double>();
-////		List<Double> px = new ArrayList<Double>();
-////		List<Double> py = new ArrayList<Double>();
-////		List<Double> ex = new ArrayList<Double>();
-////		List<Double> ey = new ArrayList<Double>();
-////		List<Position> l = new ArrayList<Position>();
-////		List<Double> ly = new ArrayList<Double>();
-////		List<Position> r = new ArrayList<Position>();
-////		List<Double> ry = new ArrayList<Double>();
-//		
-//		
-//		for (int i = 0; i < (int)(path.getTotalTime() / DT)+1; i++) {
-//			leftP.add(path.getLeftArclength(i));
-//			rightP.add(path.getRightArclength(i));
-//			lx.add(path.getLX(i));
-//			ly.add(path.getLY(i));
-//			rx.add(path.getRX(i));
-//			ry.add(path.getRY(i));
-//			la.add(path.getLeftAlpha(i));
-//			ra.add(path.getRightAlpha(i));
-//			lw.add(path.getLeftWheelOmega(i));
-//			rw.add(path.getRightWheelOmega(i));
-//			lv.add(path.getLeftVelocity(i));
-//			rv.add(path.getRightVelocity(i));
-//			head.add(path.getHeadingT(i));
-//			omeg.add(path.getOmega(i));
-//			les.add(new Position(path.getLX(i), path.getLY(i), 0));
-//			ris.add(new Position(path.getRX(i), path.getRY(i), 0));
-//			time.add(i * DT);
-//		}
-//		
-//		viewGraph(time, head);
-//		viewGraph(time, omeg);
-//		viewGraph(lx, ly);
-//		viewGraph(rx, ry);
-//		Position[] l = new Position[les.size()];
-//		Position[] r = new Position[ris.size()];
-//		for (int i = 0; i < les.size(); i++) {
-//			l[i] = les.get(i);
-//			r[i] = ris.get(i);
-//		}
-//		viewGraph(x, y, l, r);
-////		viewGraph(time, la);
-//		viewGraph(time, ra);
-//		viewGraph(time, lw);
-//		viewGraph(time, rw);
-//		viewGraph(time, lv);
-//		viewGraph(time, rv);
-//		viewGraph(time, left, leftV, leftA);
-//		viewGraph(time, right, rightV, rightA);
-//		viewGraph(time, leftF);
-//		viewGraph(time, rightF);
-//		viewGraph(time, leftP);
-//		viewGraph(time, rightP);
-//		viewGraph(time, middleP);
-//		viewGraph(mx, my, frcPath);
-//		viewGraph(mx, my, px, py, false);
-//		viewGraph(time, ex);
-//		viewGraph(time, ey);
-//		Position[] tempL = new Position[l.size()];
-//		Position[] tempR = new Position[r.size()];
-//		for (int i = 0; i < tempL.length; i++) {
-//			tempL[i] = l.get(i);
-//			tempR[i] = r.get(i);
-//		}
-//		viewGraph(mx, my, tempL, tempR);
+		GoodGraphing heading2 = new GoodGraphing(new double[][]{{0,0}}, Color.black, Color.black);
+		heading.setTitle("Headings and Omegas\nHeadings = red\nOmegas = black");
+		heading.setXLabel("Time (s)");
+		heading.setYLabel("Radians or Radians / second");
+		heading.xGridOn();
+		heading.yGridOn();
+		addHeadings(heading2, combined);
+		
+		velFigure.setVisible(false);
+		f2.setVisible(false);
+		figure.setVisible(false);
+	}
+	public static void display(PathPlanner pather) {
+		int maxIndex = 0;
+		for (int i = 0; i < pather.getOmegas().length; i++) {
+			if (pather.getOmegas()[i][1] > pather.getOmegas()[maxIndex][1]) {
+				maxIndex = i;
+			}
+		}
+		
+		System.out.println();
+		System.out.println("X and Y of point at max velocity: ("+pather.getCenterPath()[maxIndex][0]+", "+pather.getCenterPath()[maxIndex][1]+")");
+	}
+	public static GoodGraphing makeField(double width, double height) {
+		GoodGraphing figure = new GoodGraphing(makeSwitch(0), Color.black, null);
+		figure.addData(makeScale(), Color.black);
+		figure.addData(makeExchanges(0), Color.black);
+		figure.addData(makePlatform(), Color.black);
+		figure.addData(makePortals(), Color.black);
+		figure.addData(makeSwitch(1), Color.black);
+		figure.addData(makeExchanges(1), Color.black);
+		figure.setXTic(0, width, 10);
+		figure.setYTic(0, height, 10);
+		figure.setXLabel("Field width (inches)");
+		figure.setYLabel("Field width (inches)");
+		figure.setTitle("Field with left and right paths\nCenter = blue\nLeft = red\nRight = green");
+		figure.xGridOn();
+		figure.yGridOn();
+		return figure;
+	}
+	public static void addData(GoodGraphing figure, PathPlanner pather, Point[] points) {
+		double[][] temp = new double[points.length][2];
+		for (int i = 0; i < points.length; i++) {
+			temp[i][0] = points[i].x;
+			temp[i][1] = points[i].y;
+		}
+		figure.addData(temp, Color.black, Color.black);
+		
+		figure.addData(pather.getCenterPath(), Color.blue, Color.blue);
+		figure.addData(pather.getLeftPath(), Color.red);
+		figure.addData(pather.getRightPath(), Color.green);
+	}
+	public static void addHeadings(GoodGraphing figure, PathPlanner... pathers) {
+		
+		for (int i = 0; i < pathers.length; i++) {
+			PathPlanner pather = pathers[i];
+			double[][] tempOmegas = pather.getOmegas();
+			double[][] tempHeadings = pather.getHeadings();
+			if (i != 0) {
+				for (int j = 0; j < tempOmegas.length; j++) {
+					tempOmegas[j][0] += pathers[i-1].getOmegas()[pathers[i-1].getOmegas().length-1][0];
+					tempHeadings[j][0] += pathers[i-1].getHeadings()[pathers[i-1].getHeadings().length-1][0];					
+				}
+			}
+			figure.addData(tempOmegas, Color.black, Color.black);
+			figure.addData(tempHeadings, Color.red);
+		}
 	}
 	/**
 	 * Displays various information about the path provided.

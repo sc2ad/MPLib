@@ -156,7 +156,8 @@ public class RobotPath {
 //	}
 	public double getOmega(double time) {
 		// Also converts to degrees / second
-		return traj.getOmega(traj.seconds * time / getMainPath().getTotalTime()) * (traj.seconds / getMainPath().getTotalTime());
+//		return traj.getOmega(traj.seconds * time / getMainPath().getTotalTime()) * (traj.seconds / getMainPath().getTotalTime());
+		return 0;
 	}
 	public double getOmega(int tIndex) {
 		return (getHeadingT(tIndex * T_STEP) - getHeadingT((tIndex - 1) * T_STEP)) / (T_STEP);

@@ -4,7 +4,7 @@ import util.Util;
 
 public class Trajectory {
 	int ARCLENGTH_SAMPLES = 10000;
-	private Spline[] xySplines;
+	public Spline[] xySplines;
 	private double arclength;
 	private double leftArclength = 0;
 	private double rightArclength = 0;
@@ -12,6 +12,18 @@ public class Trajectory {
 	private double lastTime = -1;
 	public double seconds = 0;
 	private double omega;
+	public Trajectory(Samples s, Trajectory... trajs) {
+		ARCLENGTH_SAMPLES = s.value;
+		xySplines = new Spline[2];
+		for (int index = 0; index < xySplines.length; index++) {
+			Spline[] temp = new Spline[trajs.length];
+			for (int i = 0; i < temp.length; i++) {
+				temp[i] = trajs[i].xySplines[index];
+			}
+			xySplines[index] = new Spline(temp[0].x0, temp[temp.length-1].x1, temp);
+		}
+		seconds = xySplines[0].seconds;
+	}
 	public Trajectory(Samples s, Spline... xySplines) {
 		if (xySplines.length != 2) {
 			throw new IllegalArgumentException("Must have 2 splines!");
@@ -31,30 +43,23 @@ public class Trajectory {
 //		double dydx = dydt / dxdt;
 		return Math.atan2(dydt, dxdt); // Could be faster
 	}
-	public double getOmega(double t) {
-		// THIS IS IN SPLINE SECONDS PLEASE PLEASE PLEASRE PLEASE OAJFP LEOJFAHKGH LKHJF CONVERT TO NORMAL UNITS OF MEASUREMENT LIKE SECONDS
-		double heading = getHeading(t);
-		if (lastTime == -1 || lastTime > t) {
-			lastHeading = heading;
-			lastTime = t;
-			heading = getHeading(t+0.00125); // Magic number used here to depict correct omega at stat point
-			return (heading - lastHeading) / (0.00125);
-		}
-		if (t == lastTime) {
-			return omega;
-		}
-		double omega = (heading - lastHeading) / (t - lastTime);
-		this.omega = omega;
-		lastHeading = heading;
-		lastTime = t;
-		// Degrees per second
-		return omega;
+	public double getHeadingFromArclength(double arclength) {
+		double ratio = arclength / getArclength();
+		return getHeading(ratio * seconds);
 	}
 	public double getY(double time) {
 		return xySplines[1].get(time);
 	}
+	public double getYFromArclength(double arclength) {
+		double ratio = arclength / getArclength();
+		return getY(ratio * seconds);
+	}
 	public double getX(double time) {
 		return xySplines[0].get(time);
+	}
+	public double getXFromArclength(double arclength) {
+		double ratio = arclength / getArclength();
+		return getX(ratio * seconds);
 	}
 	public double getXDerivative(double time) {
 		return xySplines[0].getDerivative(time);
