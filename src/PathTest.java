@@ -178,27 +178,21 @@ public class PathTest {
 		};
 		
 		double[][] leftTurnBack = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y1},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y2},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
+			{121.375, 219.8905},
+			{119.0, 219.8905},
+			{105.20898876404493, 217.2905604719764},
+			{88.4629213483146, 206.1229105211406},
+			{75.72134831460673, 199.1032448377581},
+			{67.71235955056179, 198.78416912487708},
 		};
 		
 		double[][] leftGrabCube = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta-stage2y4}
-		};
-		
-		double[][] leftReverseCube = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta-stage2y4},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3}
-		};
-		
-		double[][] leftTurnToSwitch = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y3},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y2},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, height-distanceToSwitchFromWall-switchLength/2+yDelta+stage2y1},
-			{distanceToSwitchFromAlliance-robotLength/2, height-distanceToSwitchFromWall-switchLength/2+yDelta},
+			{113.58202247191011, 178.36332350049165},
+			{106.66516853932583, 185.70206489675516},
+			{96.10786516853932, 191.76450344149458},
+			{85.18651685393257, 196.2315634218289},
+			{75.72134831460673, 199.1032448377581},
+			{67.71235955056179, 198.78416912487708},
 		};
 		
 		double[][] rightPath = new double[][]{
@@ -210,27 +204,21 @@ public class PathTest {
 		};
 		
 		double[][] rightTurnBack = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y1},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y2},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
+			{121.375, 104.6095},
+			{119.0, 104.6095},
+			{105.20898876404493, 107.20943952802361},
+			{88.4629213483146, 118.3770894788594},
+			{75.72134831460673, 125.3967551622419},
+			{67.71235955056179, 125.71583087512292},
 		};
 		
 		double[][] rightGrabCube = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta+stage2y4}
-		};
-		
-		double[][] rightReverseCube = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta+stage2y4},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
-		};
-		
-		double[][] rightTurnToSwitch = new double[][]{
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y3},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x2, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y2},
-			{distanceToSwitchFromAlliance-robotLength/2-stage2x1, distanceToSwitchFromWall+switchLength/2-yDelta-stage2y1},
-			{distanceToSwitchFromAlliance-robotLength/2, distanceToSwitchFromWall+switchLength/2-yDelta},
+			{113.58202247191011, 146.13667649950835},
+			{106.66516853932583, 138.79793510324484},
+			{96.10786516853932, 132.73549655850542},
+			{85.18651685393257, 128.2684365781711},
+			{75.72134831460673, 125.3967551622419},
+			{67.71235955056179, 125.71583087512292},
 		};
 		
 		double[][] leftSwitchStart = new double[][]{
@@ -417,18 +405,18 @@ public class PathTest {
 		
 		PathData[] left2CubePathArrays = new PathData[]{
 			new PathData(leftPath, 3.2, 0.02, robotWidth),
-			new PathData(leftTurnBack, .75, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
-			new PathData(leftGrabCube, 1, 0.02, robotWidth),
-			new PathData(leftReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
-			new PathData(leftTurnToSwitch, .75, 0.02, robotWidth)
+			new PathData(leftTurnBack, 1.2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(leftGrabCube, 1.1, 0.02, robotWidth),
+			new PathData(leftGrabCube, 1.1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(leftTurnBack, 1.2, 0.02, robotWidth, PathData.PathParameter.FLIP)
 		};
 		
 		PathData[] right2CubePathArrays = new PathData[]{
 			new PathData(rightPath, 3.2, 0.02, robotWidth), 
-			new PathData(rightTurnBack, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE), 
-			new PathData(rightGrabCube, 1, 0.02, robotWidth), 
-			new PathData(rightReverseCube, 1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
-			new PathData(rightTurnToSwitch, 1, 0.02, robotWidth)
+			new PathData(rightTurnBack, 1.2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE), 
+			new PathData(rightGrabCube, 1.1, 0.02, robotWidth), 
+			new PathData(rightGrabCube, 1.1, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+			new PathData(rightTurnBack, 1.2, 0.02, robotWidth, PathData.PathParameter.FLIP)
 		};
 //		makeGraph(width, height, true, leftSwitchStartData);
 //		makeGraph(width, height, true, rightSwitchStartData);
@@ -442,19 +430,19 @@ public class PathTest {
 //		makeGraph(width, height, true, leftScaleStartDataNew);
 //		makeGraph(width, height, true, rightScaleStartDataNew);
 		
-		makeGraph(width, height, true, rightScaleLeftStartData);
-		makeGraph(width, height, true, leftScaleRightStartData);
+//		makeGraph(width, height, true, rightScaleLeftStartData);
+//		makeGraph(width, height, true, leftScaleRightStartData);
 		
 //		makeGraph(width, height, true, getPaths(left2CubeScaleStartData));
 //		makeGraph(width, height, true, getPaths(right2CubeScaleStartData));
 //		makeGraph(width, height, true, getPaths(right2CubeScaleStartData[1]));
 		
-//		makeGraph(width, height, true, getPaths(right2CubePathArrays));
 //		makeGraph(width, height, true, getPaths(left2CubePathArrays));
+//		makeGraph(width, height, true, getPaths(right2CubePathArrays));
 //		makeGraph(width, height, false, getPaths(rightPathData));
 //		makeGraph(width, height, false, getPaths(leftPathData));
 		
-//		makeGraph(width, height, true, left2CubePathArrays[1]);
+//		makeGraph(width, height, true, right2CubePathArrays[2]);
 //		makeGraph(width, height, true, leftSwitchStartData);
 		
 //		makeGraph(width, height, true, leftScaleStartData);
