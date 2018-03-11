@@ -272,10 +272,10 @@ public class PathTest {
 			{34.0, 281.935},
 			{131.8191780821918, 287.5034340659341},
 			{225.0246575342466, 290.17788461538464},
-			{309.3534246575343, 295.5267857142857},
-			{319.11780821917813, 286.61195054945057},
-			{324.0, 272.0},
-			{324.0, 266.125},
+			{299.1452054794521, 289.2864010989011},
+			{312.46027397260275, 282.154532967033},
+			{323.1123287671233, 266.1078296703297},
+			{324.0, 260.125},
 		};
 		
 		double[][] rightScaleStart = new double[][]{
@@ -292,10 +292,46 @@ public class PathTest {
 		double scaleYDelta = 8;
 		
 		double[][] leftScaleStartNew = new double[][]{
-			{robotLength/2, height-portalY-robotWidth/2},
-			{distanceToSwitchFromAlliance+switchLength+robotLength/2,height-portalY-robotWidth/2},
-			{distanceToScaleFromAlliance-robotLength/2-40, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta},
-			{distanceToScaleFromAlliance-robotLength/2+5, height-distanceToScaleFromWall-scalePlatformLength/2+scaleYDelta},
+			{18.625, 281.935},
+			{34.0, 281.935},
+			{103.41369863013699, 287.5034340659341},
+			{160.2246575342466, 289.2864010989011},
+			{222.36164383561646, 286.61195054945057},
+			{255.20547945205482, 279.03434065934067},
+			{272.0712328767124, 272.79395604395603},
+			{289.8246575342466, 260.3131868131868},
+		};
+		
+		double[][] rightScaleLeftStart = new double[][]{
+			{18.625, 281.935},
+			{34.0, 281.935},
+			{112.29041095890412, 281.26304945054943},
+			{169.98904109589043, 282.154532967033},
+			{194.84383561643838, 275.91414835164835},
+			{210.8219178082192, 262.5418956043956},
+			{221.47397260273974, 230.89423076923077},
+			{225.9123287671233, 134.61401098901098},
+			{225.0246575342466, 102.96634615384616},
+			{231.2383561643836, 85.13667582417582},
+			{242.77808219178084, 77.11332417582418},
+			{262.3068493150685, 74.43887362637363},
+			{283.6109589041096, 78.89629120879121},
+		};
+		
+		double[][] leftScaleRightStart = new double[][]{
+			{18.625, 42.565},
+			{34.0, 42.565},
+			{112.29041095890412, 43.23695054945057},
+			{169.98904109589043, 42.345467032967036},
+			{194.84383561643838, 48.58585164835165},
+			{210.8219178082192, 61.958104395604394},
+			{221.47397260273974, 93.60576923076923},
+			{225.9123287671233, 189.88598901098902},
+			{225.0246575342466, 221.53365384615384},
+			{231.2383561643836, 239.36332417582418},
+			{242.77808219178084, 247.38667582417582},
+			{262.3068493150685, 250.06112637362637},
+			{283.6109589041096, 245.6037087912088},
 		};
 		
 		double backUpTurnPoint = 55;
@@ -320,10 +356,14 @@ public class PathTest {
 		};
 		
 		double[][] rightScaleStartNew = new double[][]{
-			{robotLength/2, portalY+robotWidth/2},
-			{distanceToSwitchFromAlliance+switchLength+robotLength/2, portalY+robotWidth/2},
-			{distanceToScaleFromAlliance-robotLength/2-40, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
-			{distanceToScaleFromAlliance-robotLength/2+5, distanceToScaleFromWall+scalePlatformLength/2-scaleYDelta},
+			{18.625, 42.565},
+			{28.849315068493155, 42.791208791208796},
+			{113.17808219178083, 39.67101648351648},
+			{194.84383561643838, 41.45398351648352},
+			{242.77808219178084, 48.58585164835165},
+			{264.0821917808219, 54.82623626373626},
+			{283.6109589041096, 61.958104395604394},
+			{291.6, 68.19848901098901},
 		};
 		
 		double[][] rightScaleBackup = new double[][]{
@@ -350,8 +390,11 @@ public class PathTest {
 		PathData leftScaleStartData = new PathData(leftScaleStart, 8, 0.02, robotWidth);
 		PathData rightScaleStartData = new PathData(rightScaleStart, 8, 0.02, robotWidth);
 		
-		PathData leftScaleStartDataNew = new PathData(leftScaleStartNew, 6, 0.02, robotWidth);
-		PathData rightScaleStartDataNew = new PathData(rightScaleStartNew, 6, 0.02, robotWidth);
+		PathData leftScaleStartDataNew = new PathData(leftScaleStartNew, 8, 0.02, robotWidth);
+		PathData rightScaleStartDataNew = new PathData(rightScaleStartNew, 8, 0.02, robotWidth);
+		
+		PathData rightScaleLeftStartData = new PathData(rightScaleLeftStart, 13, 0.02, robotWidth);
+		PathData leftScaleRightStartData = new PathData(leftScaleRightStart, 13, 0.02, robotWidth);
 		
 		PathData[] left2CubeScaleStartData = new PathData[]{
 			leftScaleStartDataNew,
@@ -396,8 +439,11 @@ public class PathTest {
 //		makeGraph(width, height, true, leftScaleStartData);
 //		makeGraph(width, height, true, rightScaleStartData);
 		
-		makeGraph(width, height, false, getPaths(leftScaleStartDataNew));
-		makeGraph(width, height, false, getPaths(rightScaleStartDataNew));
+//		makeGraph(width, height, true, leftScaleStartDataNew);
+//		makeGraph(width, height, true, rightScaleStartDataNew);
+		
+		makeGraph(width, height, true, rightScaleLeftStartData);
+		makeGraph(width, height, true, leftScaleRightStartData);
 		
 //		makeGraph(width, height, true, getPaths(left2CubeScaleStartData));
 //		makeGraph(width, height, true, getPaths(right2CubeScaleStartData));
