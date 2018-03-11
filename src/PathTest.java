@@ -274,36 +274,6 @@ public class PathTest {
 		p0.calculateSmoothVelocities(100, 200, 0.02);
 		pather.calculateSmoothVelocities(100, 200, 0.02);
 		
-//		double disp = frcPath0Traj.getArclength();
-//		// sqrt(2ax) = v
-//		double v = Math.sqrt(2*200*disp);
-//		if (v > 100) {
-//			v = 100.;
-//		}
-//		double t = v/200.;
-//		MotionPath accel = new LinearDerivativePath(0, v, 200);
-//		MotionPath two = new Hold(0, v);
-//		if (accel.getTotalDistance() < disp) {
-//			two = new Hold(t-accel.getTotalTime(), v);
-//		}
-//		
-//		firstCombined.setCenterProfile(new CombinedPath(0, accel, two));
-//		
-//		double disp2 = frcPathTraj.getArclength();
-//		MotionPath decel = new LinearDerivativePath(100, 0, -200);
-//		double tHold = (disp2 - decel.getTotalDistance()) / 100.;
-//		MotionPath s2 = new Hold(tHold, 100.);
-//		MotionPath s3 = new Hold(0, 100);
-//		if (v < 100.) {
-//			s2 = new LinearDerivativePath(v, 100, 200);
-//			s3 = new Hold((disp2 - decel.getTotalDistance() - s2.getTotalDistance()) / 100., 100.);
-//		}
-//		
-//		secondCombined.setCenterProfile(new CombinedPath(disp, s2, s3, decel));
-//		
-//		firstCombined.calculateSmoothVelocities(0, 0, 0.02);
-//		secondCombined.calculateSmoothVelocities(0, 0, 0.02);
-		
 		combined.calculateSmoothVelocities(1, 200, 0.02);
 		
 		display(p0);
@@ -346,10 +316,6 @@ public class PathTest {
 		heading.xGridOn();
 		heading.yGridOn();
 		addHeadings(heading2, combined);
-		
-		velFigure.setVisible(false);
-		f2.setVisible(false);
-		figure.setVisible(false);
 	}
 	public static void display(PathPlanner pather) {
 		int maxIndex = 0;

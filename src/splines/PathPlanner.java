@@ -119,6 +119,37 @@ public class PathPlanner {
 		}
 		return smoothVelocities;
 	}
+	public double[][] calculateSmoothVelocities(double maxV, double maxA, double dt, double[][] headings) {
+		int Hlength = headings.length;
+		getCenterProfile(maxV, maxA);
+		
+		double splineDT = path.seconds * dt / centerProfile.getTotalTime();
+		int length = (int)(path.seconds / splineDT)+1;
+		smoothVelocities = new double[length][2];
+		leftSmoothVelocities = new double[length][2];
+		rightSmoothVelocities = new double[length][2];
+		centerVelocities = new double[length][2];
+		leftPath = new double[length][2];
+		rightPath = new double[length][2];
+		centerPath = new double[length][2];
+		this.headings = new double[length][2];
+		omegas = new double[length][2];
+		
+		double centerX = path.getX(0), centerY = path.getY(0);
+		double heading = path.getHeading(0);
+		double leftX = centerX - width / 2 * Math.sin(heading), leftY = centerY + width / 2 * Math.cos(heading);
+		double rightX = centerX + width / 2 * Math.sin(heading), rightY = centerY - width / 2 * Math.cos(heading);
+		
+		double t = 0;
+		// headings should have arclength parametrization.
+		// Get headings given an arclength, then ask for them at given arclengths (given from path)
+		// Feed these headings into the new headings array, and everything should be complete!
+		double maxT = headings[length-1][0];
+		while (t < headings[length-1][0]) {
+			
+			t+= dt;
+		}
+	}
 	public double[][] getCenterVelocities() {
 		return centerVelocities;
 	}
