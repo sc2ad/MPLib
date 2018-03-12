@@ -251,26 +251,62 @@ public class PathTest {
 			{209.0465753424658, 244.26648351648353},
 		};
 		
+		double[][] leftSwitchStartInvert = new double[][]{
+			{207.27123287671236, 305.77884615384613},
+			{203.7205479452055, 296.864010989011},
+			{198.39452054794523, 292.4065934065934},
+			{176.2027397260274, 284.38324175824175},
+			{169.98904109589043, 274.5769230769231},
+			{168.0, 260.875},
+			{168.0, 257.875},
+		};
+		
 		double[][] leftSwitchStartNew = new double[][]{
 			{robotLength/2, height-portalY-robotWidth/2},
 			{distanceToSwitchFromAlliance+widthOfSwitch/2, height-portalY-robotWidth/2},
 			{distanceToSwitchFromAlliance+widthOfSwitch/2, height-distanceToSwitchFromWall+robotLength/2},
 		};
 		
-		double[][] rightSwitchStart = leftSwitchStart;
-		for (int i = 0; i < rightSwitchStart.length; i++) {
-			rightSwitchStart[i][1] = height - rightSwitchStart[i][1];
-		}
+		double[][] rightSwitchStart = new double[][]{
+			{18.625, 42.565},
+			{28.625, 42.565},
+			{75.0082191780822, 29.86469780219778},
+			{105.18904109589042, 28.081730769230774},
+			{141.58356164383562, 34.32211538461536},
+			{159.33698630136988, 48.58585164835165},
+			{168.0, 63.625},
+			{168.0, 66.625},
+		};
 		
-		double[][] rightSwitchStartBackup = leftSwitchStartBackup;
-		for (int i = 0; i < rightSwitchStartBackup.length; i++) {
-			rightSwitchStartBackup[i][1] = height - rightSwitchStartBackup[i][1];
-		}
+		double[][] rightSwitchStartBackup = new double[][]{
+			{168.0, 66.625},
+			{168.0, 63.625},
+			{169.98904109589043, 49.923076923076906},
+			{176.2027397260274, 40.11675824175825},
+			{198.39452054794523, 32.0934065934066},
+			{203.7205479452055, 27.63598901098902},
+			{207.27123287671236, 18.721153846153868},
+		};
 		
-		double[][] rightSwitchStartGrabCube = leftSwitchStartGrabCube;
-		for (int i = 0; i < rightSwitchStartGrabCube.length; i++) {
-			rightSwitchStartGrabCube[i][1] = height - rightSwitchStartGrabCube[i][1];
-		}
+		double[][] rightSwitchStartGrabCube = new double[][]{
+			{207.27123287671236, 18.721153846153868},
+			{203.7205479452055, 27.63598901098902},
+			{206.38356164383563, 34.76785714285711},
+			{206.38356164383563, 39.225274725274744},
+			{209.93424657534248, 49.0315934065934},
+			{217.0356164383562, 57.946428571428555},
+			{209.0465753424658, 80.23351648351647},
+		};
+		
+		double[][] rightSwitchStartInvert = new double[][]{
+			{207.27123287671236, 18.721153846153868},
+			{203.7205479452055, 27.63598901098902},
+			{198.39452054794523, 32.0934065934066},
+			{176.2027397260274, 40.11675824175825},
+			{169.98904109589043, 49.923076923076906},
+			{168.0, 63.625},
+			{168.0, 66.625},
+		};
 		
 		double[][] rightSwitchStartNew = new double[][]{
 			{robotLength/2, portalY+robotWidth/2},
@@ -403,14 +439,18 @@ public class PathTest {
 				leftSwitchStartData,
 				new PathData(leftSwitchStartBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 				new PathData(leftSwitchStartGrabCube, 2, 0.02, robotWidth),
+				new PathData(leftSwitchStartGrabCube, 2, 0.02, robotWidth, PathData.PathParameter.REVERSE),
+				new PathData(leftSwitchStartInvert, 2, 0.02, robotWidth),
 		};
 		
-		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5.8, 0.02, robotWidth);
+		PathData rightSwitchStartData = new PathData(rightSwitchStart, 5, 0.02, robotWidth);
 		
 		PathData[] rightSwitchGrabCube = new PathData[]{
 				rightSwitchStartData,
-				new PathData(rightSwitchStartBackup, 2, 0.02, robotWidth, PathData.PathParameter.REVERSE),
-				new PathData(rightSwitchStartGrabCube, 2, 0.02, robotWidth),
+				new PathData(rightSwitchStartBackup, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+				new PathData(rightSwitchStartGrabCube, 2, 0.02, robotWidth, PathData.PathParameter.FLIP),
+				new PathData(rightSwitchStartGrabCube, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
+				new PathData(rightSwitchStartInvert, 2, 0.02, robotWidth),
 		};
 		
 		PathData leftScaleStartData = new PathData(leftScaleStart, 8, 0.02, robotWidth);
@@ -456,10 +496,10 @@ public class PathTest {
 			new PathData(rightGrabCube, 2, 0.02, robotWidth, PathData.PathParameter.FLIPREVERSE),
 			new PathData(rightTurnBack, 2, 0.02, robotWidth, PathData.PathParameter.FLIP)
 		};
-		makeGraph(width, height, false, getPaths(leftSwitchGrabCube));
-		makeGraph(width, height, true, rightSwitchGrabCube[0]);
-		makeGraph(width, height, true, rightSwitchGrabCube[1]);
-		makeGraph(width, height, true, rightSwitchGrabCube[2]);
+//		makeGraph(width, height, true, getPaths(leftSwitchGrabCube));
+		makeGraph(width, height, true, getPaths(rightSwitchGrabCube));
+//		makeGraph(width, height, true, leftSwitchGrabCube[0]);
+//		makeGraph(width, height, true, rightSwitchGrabCube[0]);
 		
 //		makeGraph(width, height, true, leftSwitchGrabCube[2]);
 //		makeGraph(width, height, true, rightSwitchStartData);
