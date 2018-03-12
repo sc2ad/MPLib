@@ -79,7 +79,9 @@ public class PathData {
 		double[][] tmp = path.rightPath;
 		path.rightPath = path.leftPath;
 		path.leftPath = tmp;
-		
+		double[][] temp = path.smoothLeftVelocity;
+		path.smoothLeftVelocity = path.smoothRightVelocity;
+		path.smoothRightVelocity = temp;
 //		reversePath(path);
 	}
 	private void reversePath(FastPathPlanner path) {
