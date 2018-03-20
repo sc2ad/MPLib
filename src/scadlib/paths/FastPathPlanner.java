@@ -23,11 +23,6 @@ import java.util.List;
  * these functions, so there is room for some improvement. 
  * 
  * Initial tests on the 2015 FRC NI RoboRio, the complete algorithm finishes in under 15ms using the Java System Timer for paths with less than 50 nodes. 
- * 
- * @author Kevin Harrilal
- * @email kevin@team2168.org
- * @version 1.0
- * @date 2014-Aug-11
  *
  */
 public class FastPathPlanner
