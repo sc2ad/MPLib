@@ -522,7 +522,7 @@ public class PathTest {
 			{233.9013698630137, 271.4567307692308},
 			{233.45753424657536, 261.6504120879121},
 			{229.71235955056179, 248.25539160045403},
-			{223.15955056179774, 235.36379114642452},
+			{224.61573033707865, 239.78376844494892},
 		};
 		
 		double[][] leftScaleReturnCube = new double[][]{
@@ -549,7 +549,7 @@ public class PathTest {
 			{230.07640449438202, 52.30306469920545},
 			{226.79999999999998, 62.98467650397276},
 			{222.06741573033707, 76.98127128263337},
-			{216.6067415730337, 87.29455164585698},
+			{218.4269662921348, 83.61123723041997},
 		};
 		
 		double[][] rightScaleLeftStartReturnCube = new double[][]{
@@ -875,9 +875,9 @@ public class PathTest {
 //		makeGraph(width, height, true, left2CubeScaleStartData[0]);
 //		makeGraph(width, height, true, left2CubeScaleStartData[1]);
 //		makeGraph(width, height, true, left2CubeScaleStartData[2]);
-//		makeGraph(width, height, true, left2CubeScaleStartData[4]);
+		makeGraph(width, height, true, left2CubeScaleStartData[4]);
 		
-		makeGraph(width, height, true, getPaths(left2CubeFarScaleData));
+//		makeGraph(width, height, true, getPaths(left2CubeFarScaleData));
 //		makeGraph(width, height, true, left2CubeFarScaleData[0]);
 //		makeGraph(width, height, true, left2CubeFarScaleData[1]);
 //		makeGraph(width, height, true, left2CubeFarScaleData[2]);
